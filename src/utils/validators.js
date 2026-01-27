@@ -3,8 +3,8 @@
  * Rule: Min 6 chars, 1 hoa, 1 thường, 1 đặc biệt/số
  */
 export const validatePassword = (password) => {
-  const regex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-  return password && password.length >= 6 && regex.test(password);
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+  return !!password && regex.test(password);
 };
 
 /**
