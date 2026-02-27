@@ -1,12 +1,14 @@
 // src/context/AuthContext.jsx
 import { createContext, useState, useEffect } from "react";
 import { getProfile } from "../services/authService";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // Trạng thái đang check login
+  const navigate = useNavigate();
 
   // Mỗi lần F5 trang web, chạy cái này đầu tiên
   useEffect(() => {
@@ -32,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    // Gọi thêm API logout ở đây nếu cần
+    navigate("/login", { replace: true });
   };
 
   return (

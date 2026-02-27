@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
 import "./LoginPage.css";
 import { validatePassword, validateUsername } from "../../utils/validators";
 import { loginUser } from "../../services/authService";
+import { AuthContext } from "../../context/AuthContext"; // 2. Import AuthContext
 
-// Logo giả lập (thực tế bạn nên import từ assets)
+// Logo giả lập
 const LogoIcon = () => (
   <svg
     width="48"
@@ -42,11 +44,14 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
+  // 3. Khởi tạo hooks
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
   // Handle thay đổi input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear lỗi khi user bắt đầu gõ lại
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -67,7 +72,6 @@ const LoginPage = () => {
     }
 
     setErrors(newErrors);
-    // Trả về true nếu không có lỗi (Object keys length = 0)
     return Object.keys(newErrors).length === 0;
   };
 
@@ -80,12 +84,16 @@ const LoginPage = () => {
 
     setIsLoading(true);
     try {
+      // Gọi API đăng nhập
       const result = await loginUser(formData);
-      console.log("Login Success:", result);
-      alert("Đăng nhập thành công!");
-      // TODO: Lưu token và redirect (ví dụ: navigate('/dashboard'))
+
+      // 4. Cập nhật Auth Context (Lưu user info vào state toàn cục)
+      login(result.user);
+
+      // 5. Chuyển hướng sang Dashboard
+      navigate("/dashboard");
     } catch (error) {
-      setApiError(error.message);
+      setApiError(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +107,7 @@ const LoginPage = () => {
           <div className="login-card__logo">
             <LogoIcon />
           </div>
-          <h1 className="login-card__title">IMS Enterprise</h1>
+          <h1 className="login-card__title">IMS Mini Mart</h1>
           <p className="login-card__subtitle">Đăng nhập để tiếp tục</p>
         </div>
 
@@ -114,7 +122,9 @@ const LoginPage = () => {
               type="text"
               id="username"
               name="username"
-              className={`login-form__input ${errors.username ? "login-form__input--error" : ""}`}
+              className={`login-form__input ${
+                errors.username ? "login-form__input--error" : ""
+              }`}
               placeholder="admin"
               value={formData.username}
               onChange={handleChange}
@@ -133,7 +143,9 @@ const LoginPage = () => {
               type="password"
               id="password"
               name="password"
-              className={`login-form__input ${errors.password ? "login-form__input--error" : ""}`}
+              className={`login-form__input ${
+                errors.password ? "login-form__input--error" : ""
+              }`}
               placeholder="••••••"
               value={formData.password}
               onChange={handleChange}
@@ -157,7 +169,10 @@ const LoginPage = () => {
         </form>
 
         {/* Footer Helper */}
-        <div className="login-card__footer">Default: admin / 123456</div>
+        <div className="login-card__footer">
+          Default: owner, admin, manager_hn, warehouse_hn, sales_hn,
+          manager_hcm, warehouse_hcm / 123456aA@
+        </div>
       </div>
     </div>
   );

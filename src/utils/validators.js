@@ -12,6 +12,6 @@ export const validatePassword = (password) => {
  * Rule: Min 5 chars, chỉ chữ và số (tùy chỉnh theo nghiệp vụ)
  */
 export const validateUsername = (username) => {
-  const regex = /^[a-zA-Z0-9]+$/;
+  const regex = /^[a-zA-Z0-9_-]+$/;
   return username && username.length >= 5 && regex.test(username);
 };

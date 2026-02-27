@@ -59,69 +59,6 @@ const Sidebar = () => {
         },
       ],
     },
-    {
-      label: "Quản lý kho",
-      items: [
-        {
-          path: "/products",
-          label: "Sản phẩm",
-          icon: <FaBoxes className="h-5 w-5" />,
-          allowedRoles: ["OWNER", "MANAGER", "WAREHOUSE_STAFF", "SALESPERSON"],
-        },
-        {
-          path: "/stock-tickets/create",
-          label: "Tạo phiếu",
-          icon: <IoIosCreate className="h-5 w-5" />,
-          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
-        },
-        {
-          path: "/stock-tickets",
-          label: "Lịch sử thay đổi",
-          icon: <FaFileInvoice className="h-5 w-5" />,
-          allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
-        },
-      ],
-    },
-    {
-      label: "Đối tác & Vận hành",
-      items: [
-        {
-          path: "/suppliers",
-          label: "Nhà cung cấp",
-          icon: <FaTruck className="h-5 w-5" />,
-          allowedRoles: ["OWNER", "MANAGER"], // ADMIN_SYSTEM không thấy
-        },
-        {
-          path: "/customers",
-          label: "Khách hàng",
-          icon: <FaUsers className="h-5 w-5" />,
-          allowedRoles: ["SALESPERSON"], // ADMIN_SYSTEM không thấy
-        },
-      ],
-    },
-    {
-      label: "Quản trị hệ thống", // Group mới cho Admin System
-      items: [
-        {
-          path: "/employees",
-          label: "Nhân viên",
-          icon: <FaUsers className="h-5 w-5" />,
-          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
-        },
-        {
-          path: "/master-data",
-          label: "Cấu hình chung", // Có thể trỏ về Dashboard hoặc trang riêng
-          icon: <FaSliders className="h-5 w-5" />,
-          allowedRoles: ["ADMIN_SYSTEM", "OWNER"],
-        },
-        {
-          path: "/locations",
-          label: "Quản lý Kho",
-          icon: <FaWarehouse className="h-5 w-5" />, // Nhớ import icon
-          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ Admin/Owner mới thấy
-        },
-      ],
-    },
   ];
 
   return (
