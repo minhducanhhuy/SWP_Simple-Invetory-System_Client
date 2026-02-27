@@ -1,25 +1,28 @@
-const API_URL = process.env.REACT_APP_API_URL;
-
-console.log("Check API URL:", API_URL); // Kiểm tra xem đã nhận chưa
+// src/services/authService.js
+import api from "./api"; // Import cái instance vừa tạo
 
 export const loginUser = async (credentials) => {
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    });
+    // Không cần credentials: "include" nữa vì api.js đã lo rồi
+    const response = await api.post("/auth/login", credentials);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 
-    const data = await response.json();
+export const logoutUser = async () => {
+  try {
+    await api.post("/auth/logout");
+  } catch (error) {
+    console.error("Logout failed", error);
+  }
+};
 
-    if (!response.ok) {
-      // Ném lỗi về component để xử lý hiển thị
-      throw new Error(data.message || "Đăng nhập thất bại");
-    }
-
-    return data;
+export const getProfile = async () => {
+  try {
+    const response = await api.get("/auth/profile"); // Hoặc /users/me
+    return response.data;
   } catch (error) {
     throw error;
   }
