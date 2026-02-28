@@ -17,6 +17,7 @@ import {
 import { FaSliders } from "react-icons/fa6";
 import { IoIosCreate } from "react-icons/io";
 import { AuthContext } from "../../context/AuthContext";
+import { logoutUser } from "../../services/authService";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -42,7 +43,7 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    logout(); // Gọi hàm logout từ context
+    logoutUser(); // Gọi hàm logout từ context
   };
 
   // Cấu hình danh sách menu và quyền truy cập

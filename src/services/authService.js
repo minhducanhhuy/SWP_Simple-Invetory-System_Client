@@ -21,9 +21,16 @@ export const logoutUser = async () => {
 
 export const getProfile = async () => {
   try {
-    const response = await api.get("/auth/profile"); // Hoặc /users/me
+    const response = await api.get("/users/me"); // Hoặc /users/me
     return response.data;
   } catch (error) {
     throw error;
   }
+};
+
+export const acceptInvite = async (data) => {
+  // data gồm: { token, username, password, fullName, phone }
+  const response = await api.post("/auth/accept-invite", data);
+
+  return response.data;
 };
