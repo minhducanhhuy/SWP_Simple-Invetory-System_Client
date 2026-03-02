@@ -33,7 +33,9 @@ function App() {
                   <MainLayout />
                 </ProtectedRoute>
               }
-            ></Route>
+            >
+              <Route path="/employees" element={<EmployeePage />} />
+            </Route>
           </Routes>
         </LocationProvider>
       </AuthProvider>
