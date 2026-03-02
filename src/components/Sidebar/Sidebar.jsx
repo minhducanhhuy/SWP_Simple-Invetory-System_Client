@@ -17,6 +17,7 @@ import {
 import { FaSliders } from "react-icons/fa6";
 import { IoIosCreate } from "react-icons/io";
 import { AuthContext } from "../../context/AuthContext";
+import { logoutUser } from "../../services/authService";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -42,24 +43,12 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    logout(); // Gọi hàm logout từ context
+    logoutUser(); // Gọi hàm logout từ context
   };
 
   // Cấu hình danh sách menu và quyền truy cập
   // allowedRoles: Các role được phép nhìn thấy menu này
-  const MENU_GROUPS = [
-    {
-      label: "Tổng quan",
-      items: [
-        {
-          path: "/dashboard",
-          label: "Dashboard",
-          icon: <FaChartPie className="h-5 w-5" />,
-          allowedRoles: ["ADMIN_SYSTEM", "OWNER", "MANAGER", "WAREHOUSE_STAFF"],
-        },
-      ],
-    },
-  ];
+  const MENU_GROUPS = [];
 
   return (
     <aside className="flex h-screen w-64 shrink-0 z-20 flex-col bg-[#172554] font-sans text-white shadow-2xl transition-all duration-300">
