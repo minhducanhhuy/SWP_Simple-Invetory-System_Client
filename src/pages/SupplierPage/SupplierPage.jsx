@@ -34,6 +34,11 @@ const SupplierModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
       return alert("Vui lòng nhập Mã và Tên!");
     onSave(formData);
   };
+  const formatMoney = (value) => {
+  if (!value) return "";
+  const number = value.toString().replace(/\D/g, "");
+  return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -127,12 +132,13 @@ const SupplierModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
                 Nợ đầu kỳ (VNĐ)
               </label>
               <input
-                type="number"
+                type="text"
                 className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-medium text-right"
-                value={formData.initialDebt}
-                onChange={(e) =>
-                  setFormData({ ...formData, initialDebt: e.target.value })
-                }
+                value={formatMoney(formData.initialDebt)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ""); // Chỉ giữ lại số
+                  setFormData({ ...formData, initialDebt: value });
+                }}
               />
             </div>
           )}
@@ -204,7 +210,7 @@ const SupplierPage = () => {
       } else {
         await createSupplier({
           ...data,
-          initialDebt: Number(data.initialDebt),
+          initialDebt: Number(data.initialDebt || 0),
         });
         alert("Thêm mới thành công!");
       }
