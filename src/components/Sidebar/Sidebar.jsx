@@ -68,6 +68,17 @@ const Sidebar = () => {
       ],
     },
     {
+      label: "Đối tác & Vận hành",
+      items: [
+        {
+          path: "/customers",
+          label: "Khách hàng",
+          icon: <FaUsers className="h-5 w-5" />,
+          allowedRoles: ["SALESPERSON"], // ADMIN_SYSTEM không thấy
+        },
+      ],
+    },
+    {
       label: "Quản trị hệ thống", // Group mới cho Admin System
       items: [
         {
