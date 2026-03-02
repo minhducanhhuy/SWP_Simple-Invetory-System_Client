@@ -43,7 +43,8 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    logoutUser(); // Gọi hàm logout từ context
+    logoutUser(); // xóa token
+    logout(); // điều hướng
   };
 
   // Cấu hình danh sách menu và quyền truy cập
@@ -57,6 +58,23 @@ const Sidebar = () => {
           label: "Nhà cung cấp",
           icon: <FaTruck className="h-5 w-5" />,
           allowedRoles: ["OWNER", "MANAGER"], // ADMIN_SYSTEM không thấy
+        },
+      ],
+    },
+    {
+      label: "Quản lý kho",
+      items: [
+        {
+          path: "/stock-tickets/create",
+          label: "Tạo phiếu",
+          icon: <IoIosCreate className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
+        },
+        {
+          path: "/stock-tickets",
+          label: "Lịch sử thay đổi",
+          icon: <FaFileInvoice className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
         },
       ],
     },
