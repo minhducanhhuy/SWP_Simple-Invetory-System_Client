@@ -58,6 +58,12 @@ const Sidebar = () => {
           icon: <FaUsers className="h-5 w-5" />,
           allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
         },
+        {
+          path: "/locations",
+          label: "Quản lý Kho",
+          icon: <FaWarehouse className="h-5 w-5" />, // Nhớ import icon
+          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ Admin/Owner mới thấy
+        },
       ],
     },
   ];
