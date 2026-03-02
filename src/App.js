@@ -7,6 +7,7 @@ import { LocationProvider } from "./context/LocationContext";
 import MainLayout from "./layouts/MainLayout";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
+import EmployeePage from "./pages/EmployeePage/EmployeePage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
