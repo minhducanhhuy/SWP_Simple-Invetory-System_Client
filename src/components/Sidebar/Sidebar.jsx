@@ -48,7 +48,19 @@ const Sidebar = () => {
 
   // Cấu hình danh sách menu và quyền truy cập
   // allowedRoles: Các role được phép nhìn thấy menu này
-  const MENU_GROUPS = [];
+  const MENU_GROUPS = [
+    {
+      label: "Quản trị hệ thống", // Group mới cho Admin System
+      items: [
+        {
+          path: "/employees",
+          label: "Nhân viên",
+          icon: <FaUsers className="h-5 w-5" />,
+          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
+        },
+      ],
+    },
+  ];
 
   return (
     <aside className="flex h-screen w-64 shrink-0 z-20 flex-col bg-[#172554] font-sans text-white shadow-2xl transition-all duration-300">
