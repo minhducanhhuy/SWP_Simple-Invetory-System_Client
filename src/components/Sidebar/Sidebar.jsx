@@ -48,14 +48,20 @@ const Sidebar = () => {
   // Cấu hình danh sách menu và quyền truy cập
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
-    {
-      label: "Tổng quan",
+     {
+      label: "Quản lý kho",
       items: [
         {
-          path: "/dashboard",
-          label: "Dashboard",
-          icon: <FaChartPie className="h-5 w-5" />,
-          allowedRoles: ["ADMIN_SYSTEM", "OWNER", "MANAGER", "WAREHOUSE_STAFF"],
+          path: "/stock-tickets/create",
+          label: "Tạo phiếu",
+          icon: <IoIosCreate className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
+        },
+        {
+          path: "/stock-tickets",
+          label: "Lịch sử thay đổi",
+          icon: <FaFileInvoice className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
         },
       ],
     },

@@ -91,7 +91,7 @@ const LoginPage = () => {
       login(result.user);
 
       // 5. Chuyển hướng sang Dashboard
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       setApiError(error.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {

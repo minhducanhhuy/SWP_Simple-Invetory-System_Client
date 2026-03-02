@@ -7,6 +7,8 @@ import { LocationProvider } from "./context/LocationContext";
 import MainLayout from "./layouts/MainLayout";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
+import StockTicketListPage from "./pages/StockTicketPage/StockTicketListPage";
+
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -33,7 +35,9 @@ function App() {
                   <MainLayout />
                 </ProtectedRoute>
               }
-            ></Route>
+            >
+              <Route path="/stock-tickets" element={<StockTicketListPage />} />
+            </Route>
           </Routes>
         </LocationProvider>
       </AuthProvider>
