@@ -17,6 +17,7 @@ import {
 import { FaSliders } from "react-icons/fa6";
 import { IoIosCreate } from "react-icons/io";
 import { AuthContext } from "../../context/AuthContext";
+import { logoutUser } from "../../services/authService";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -42,7 +43,7 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    logout(); // Gọi hàm logout từ context
+    logoutUser(); // Gọi hàm logout từ context
   };
 
   // Cấu hình danh sách menu và quyền truy cập
@@ -51,17 +52,34 @@ const Sidebar = () => {
      {
       label: "Quản lý kho",
       items: [
+          {
+            path: "/stock-tickets/create",
+            label: "Tạo phiếu",
+            icon: <IoIosCreate className="h-5 w-5" />,
+            allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
+          },
+          {
+            path: "/stock-tickets",
+            label: "Lịch sử thay đổi",
+            icon: <FaFileInvoice className="h-5 w-5" />,
+            allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
+          },
+        ],
+      },
+      {
+      label: "Quản trị hệ thống", // Group mới cho Admin System
+      items: [
         {
-          path: "/stock-tickets/create",
-          label: "Tạo phiếu",
-          icon: <IoIosCreate className="h-5 w-5" />,
-          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
+          path: "/employees",
+          label: "Nhân viên",
+          icon: <FaUsers className="h-5 w-5" />,
+          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
         },
         {
-          path: "/stock-tickets",
-          label: "Lịch sử thay đổi",
-          icon: <FaFileInvoice className="h-5 w-5" />,
-          allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
+          path: "/locations",
+          label: "Quản lý Kho",
+          icon: <FaWarehouse className="h-5 w-5" />, // Nhớ import icon
+          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ Admin/Owner mới thấy
         },
       ],
     },

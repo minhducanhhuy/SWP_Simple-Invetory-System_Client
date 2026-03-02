@@ -9,6 +9,8 @@ import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 import StockTicketListPage from "./pages/StockTicketPage/StockTicketListPage";
 
+import EmployeePage from "./pages/EmployeePage/EmployeePage";
+import LocationPage from "./pages/LocationPage/LocationPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -37,6 +39,8 @@ function App() {
               }
             >
               <Route path="/stock-tickets" element={<StockTicketListPage />} />
+              <Route path="/employees" element={<EmployeePage />} />
+              <Route path="/locations" element={<LocationPage />} />
             </Route>
           </Routes>
         </LocationProvider>

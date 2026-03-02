@@ -1,7 +1,7 @@
 import React from "react";
-import Sidebar from "../components/Sidebar/Sidebar"; // Đường dẫn tuỳ project của bạn
 
 import { Outlet } from "react-router-dom";
+import Sidebar from "../components/Sidebar/Sidebar";
 import Header from "../components/Header/Header";
 
 const MainLayout = ({ children }) => {

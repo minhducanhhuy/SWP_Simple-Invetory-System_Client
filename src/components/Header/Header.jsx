@@ -8,9 +8,9 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { logoutUser } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
-import { useLocation } from "../../context/LocationContext"; // Import Context mới
+import { logoutUser } from "../../services/authService";
+import { useLocation } from "../../context/LocationContext";
 
 const Header = () => {
   const navigate = useNavigate();
