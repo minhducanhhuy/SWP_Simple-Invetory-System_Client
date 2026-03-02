@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { LocationProvider } from "./context/LocationContext";
 import MainLayout from "./layouts/MainLayout";
-import DashboardPage from "./pages/Dashboard/DashboardPage";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 
@@ -34,9 +33,7 @@ function App() {
                   <MainLayout />
                 </ProtectedRoute>
               }
-            >
-              <Route path="/dashboard" element={<DashboardPage />} />
-            </Route>
+            ></Route>
           </Routes>
         </LocationProvider>
       </AuthProvider>
