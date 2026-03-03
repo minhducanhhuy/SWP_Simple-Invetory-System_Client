@@ -12,6 +12,7 @@ import StockTicketListPage from "./pages/StockTicketPage/StockTicketListPage";
 import EmployeePage from "./pages/EmployeePage/EmployeePage";
 import LocationPage from "./pages/LocationPage/LocationPage";
 import ProductPage from "./pages/ProductPage/ProductPage";
+import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -40,6 +41,7 @@ function App() {
               }
             >
               <Route path="/products" element={<ProductPage />} />
+              <Route path="/master-data" element={<MasterDataPage />} />
               <Route path="/stock-tickets" element={<StockTicketListPage />} />
               <Route path="/employees" element={<EmployeePage />} />
               <Route path="/locations" element={<LocationPage />} />

@@ -83,6 +83,12 @@ const Sidebar = () => {
           allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
         },
         {
+          path: "/master-data",
+          label: "Cấu hình chung", // Có thể trỏ về Dashboard hoặc trang riêng
+          icon: <FaSliders className="h-5 w-5" />,
+          allowedRoles: ["ADMIN_SYSTEM"],
+        },
+        {
           path: "/locations",
           label: "Quản lý Kho",
           icon: <FaWarehouse className="h-5 w-5" />, // Nhớ import icon
