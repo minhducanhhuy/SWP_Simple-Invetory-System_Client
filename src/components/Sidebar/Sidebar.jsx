@@ -54,6 +54,12 @@ const Sidebar = () => {
       label: "Quản lý kho",
       items: [
         {
+          path: "/products",
+          label: "Sản phẩm",
+          icon: <FaBoxes className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER", "WAREHOUSE_STAFF", "SALESPERSON"],
+        },
+        {
           path: "/stock-tickets/create",
           label: "Tạo phiếu",
           icon: <IoIosCreate className="h-5 w-5" />,
