@@ -51,8 +51,25 @@ const Sidebar = () => {
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
     {
+      label: "Đối tác & Vận hành",
+      items: [
+        {
+          path: "/suppliers",
+          label: "Nhà cung cấp",
+          icon: <FaTruck className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER"], // ADMIN_SYSTEM không thấy
+        },
+      ],
+    },
+    {
       label: "Quản lý kho",
       items: [
+        {
+          path: "/products",
+          label: "Sản phẩm",
+          icon: <FaBoxes className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER", "WAREHOUSE_STAFF", "SALESPERSON"],
+        },
         {
           path: "/stock-tickets/create",
           label: "Tạo phiếu",
@@ -86,6 +103,12 @@ const Sidebar = () => {
           label: "Nhân viên",
           icon: <FaUsers className="h-5 w-5" />,
           allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
+        },
+        {
+          path: "/master-data",
+          label: "Cấu hình chung", // Có thể trỏ về Dashboard hoặc trang riêng
+          icon: <FaSliders className="h-5 w-5" />,
+          allowedRoles: ["ADMIN_SYSTEM"],
         },
         {
           path: "/locations",
