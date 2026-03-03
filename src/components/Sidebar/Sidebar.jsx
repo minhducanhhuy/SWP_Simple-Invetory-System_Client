@@ -43,30 +43,37 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
-    logoutUser(); // Gọi hàm logout từ context
+    logoutUser(); // xóa token
+    logout(); // điều hướng
   };
 
   // Cấu hình danh sách menu và quyền truy cập
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
-     {
+    {
       label: "Quản lý kho",
       items: [
-          {
-            path: "/stock-tickets/create",
-            label: "Tạo phiếu",
-            icon: <IoIosCreate className="h-5 w-5" />,
-            allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
-          },
-          {
-            path: "/stock-tickets",
-            label: "Lịch sử thay đổi",
-            icon: <FaFileInvoice className="h-5 w-5" />,
-            allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
-          },
-        ],
-      },
-      {
+        {
+          path: "/products",
+          label: "Sản phẩm",
+          icon: <FaBoxes className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER", "WAREHOUSE_STAFF", "SALESPERSON"],
+        },
+        {
+          path: "/stock-tickets/create",
+          label: "Tạo phiếu",
+          icon: <IoIosCreate className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
+        },
+        {
+          path: "/stock-tickets",
+          label: "Lịch sử thay đổi",
+          icon: <FaFileInvoice className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
+        },
+      ],
+    },
+    {
       label: "Quản trị hệ thống", // Group mới cho Admin System
       items: [
         {
@@ -74,6 +81,12 @@ const Sidebar = () => {
           label: "Nhân viên",
           icon: <FaUsers className="h-5 w-5" />,
           allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
+        },
+        {
+          path: "/master-data",
+          label: "Cấu hình chung", // Có thể trỏ về Dashboard hoặc trang riêng
+          icon: <FaSliders className="h-5 w-5" />,
+          allowedRoles: ["ADMIN_SYSTEM"],
         },
         {
           path: "/locations",
