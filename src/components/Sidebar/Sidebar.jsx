@@ -65,6 +65,12 @@ const Sidebar = () => {
       label: "Quản lý kho",
       items: [
         {
+          path: "/products",
+          label: "Sản phẩm",
+          icon: <FaBoxes className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER", "WAREHOUSE_STAFF", "SALESPERSON"],
+        },
+        {
           path: "/stock-tickets/create",
           label: "Tạo phiếu",
           icon: <IoIosCreate className="h-5 w-5" />,
@@ -86,6 +92,12 @@ const Sidebar = () => {
           label: "Nhân viên",
           icon: <FaUsers className="h-5 w-5" />,
           allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
+        },
+        {
+          path: "/master-data",
+          label: "Cấu hình chung", // Có thể trỏ về Dashboard hoặc trang riêng
+          icon: <FaSliders className="h-5 w-5" />,
+          allowedRoles: ["ADMIN_SYSTEM"],
         },
         {
           path: "/locations",

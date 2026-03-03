@@ -8,10 +8,12 @@ import MainLayout from "./layouts/MainLayout";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 import StockTicketListPage from "./pages/StockTicketPage/StockTicketListPage";
-
+import CreateTicketPage from "./pages/StockTicketPage/CreateTicketPage";
 import EmployeePage from "./pages/EmployeePage/EmployeePage";
 import LocationPage from "./pages/LocationPage/LocationPage";
 import SupplierPage from "./pages/SupplierPage/SupplierPage";
+import ProductPage from "./pages/ProductPage/ProductPage";
+import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -39,7 +41,13 @@ function App() {
                 </ProtectedRoute>
               }
             >
+              <Route path="/products" element={<ProductPage />} />
+              <Route path="/master-data" element={<MasterDataPage />} />
               <Route path="/stock-tickets" element={<StockTicketListPage />} />
+              <Route
+                path="/stock-tickets/create"
+                element={<CreateTicketPage />}
+              />           
               <Route path="/employees" element={<EmployeePage />} />
               <Route path="/locations" element={<LocationPage />} />
               <Route path="/suppliers" element={<SupplierPage />} />
