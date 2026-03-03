@@ -95,7 +95,7 @@ const SupplierModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
                 className="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 value={formData.phone}
                 onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
+                  setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })
                 }
               />
             </div>
