@@ -51,6 +51,17 @@ const Sidebar = () => {
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
     {
+      label: "Đối tác & Vận hành",
+      items: [
+        {
+          path: "/suppliers",
+          label: "Nhà cung cấp",
+          icon: <FaTruck className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER"], // ADMIN_SYSTEM không thấy
+        },
+      ],
+    },
+    {
       label: "Quản lý kho",
       items: [
         {
