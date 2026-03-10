@@ -17,6 +17,7 @@ const EditRoleModal = ({
 }) => {
   const [role, setRole] = useState("");
   const [selectedLocationIds, setSelectedLocationIds] = useState([]);
+  const [isActive, setIsActive] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   // Fill dữ liệu khi mở modal
@@ -27,6 +28,7 @@ const EditRoleModal = ({
       const currentLocIds =
         initialData.assignedLocations?.map((l) => l.id) || [];
       setSelectedLocationIds(currentLocIds);
+      setIsActive(initialData.isActive ?? true);
     }
   }, [initialData]);
 
@@ -45,7 +47,7 @@ const EditRoleModal = ({
     e.preventDefault();
     setSubmitting(true);
     // Gọi hàm save truyền role và danh sách kho mới
-    await onSave(initialData.id, role, selectedLocationIds);
+    await onSave(initialData.id, role, selectedLocationIds, isActive);
     setSubmitting(false);
   };
 
@@ -133,6 +135,24 @@ const EditRoleModal = ({
                 * Nhân viên chỉ xem được tồn kho và tạo phiếu tại các kho được
                 chọn.
               </p>
+            </div>
+
+            {/* [MỚI] THÊM PHẦN CHỈNH SỬA TRẠNG THÁI */}
+            <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+              <div>
+                <label className="block text-sm font-bold text-gray-700">
+                  Trạng thái hoạt động
+                </label>
+                <p className="text-[10px] text-gray-500 italic">
+                  * Nếu tắt, nhân viên sẽ không thể đăng nhập vào hệ thống.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                className="w-5 h-5 text-orange-500 rounded focus:ring-orange-500 cursor-pointer"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+              />
             </div>
           </div>
 
