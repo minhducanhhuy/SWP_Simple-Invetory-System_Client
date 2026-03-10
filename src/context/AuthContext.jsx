@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import { createContext, useState, useEffect } from "react";
-import { getProfile } from "../services/authService";
+import { getProfile, logoutUser } from "../services/authService";
 import { Navigate, useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    logoutUser();
     navigate("/login", { replace: true });
   };
 
