@@ -11,6 +11,7 @@ const LocationModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
     code: "",
     name: "",
     address: "",
+    isActive: true,
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -21,10 +22,11 @@ const LocationModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
         code: initialData.code || "",
         name: initialData.name || "",
         address: initialData.address || "",
+        isActive: initialData.isActive ?? true,
       });
     } else {
       // Reset form nếu là chế độ Thêm mới
-      setFormData({ code: "", name: "", address: "" });
+      setFormData({ code: "", name: "", address: "", isActive: true });
     }
   }, [initialData, isOpen]);
 
@@ -122,6 +124,27 @@ const LocationModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
               />
             </div>
           </div>
+
+          {/* [MỚI] Trạng thái hoạt động - Chỉ hiển thị khi đang Sửa */}
+          {isEditing && (
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <input
+                id="isActive"
+                type="checkbox"
+                className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 cursor-pointer"
+                checked={formData.isActive}
+                onChange={(e) =>
+                  setFormData({ ...formData, isActive: e.target.checked })
+                }
+              />
+              <label
+                htmlFor="isActive"
+                className="text-sm font-bold text-gray-700 cursor-pointer select-none"
+              >
+                Trạng thái hoạt động (Active)
+              </label>
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-4">
