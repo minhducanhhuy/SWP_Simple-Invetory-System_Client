@@ -30,6 +30,13 @@ export const assignUserLocations = async (userId, locationIds) => {
   return response.data;
 };
 
+// [MỚI] Admin cập nhật trạng thái nhân viên
+export const updateEmployeeStatus = async (id, isActive) => {
+  // Body gửi lên: { isActive: true/false }
+  const response = await api.patch(`/users/${id}/status`, { isActive });
+  return response.data;
+};
+
 // 4. Xóa nhân viên
 export const deleteEmployee = async (id) => {
   const response = await api.delete(`/users/${id}`);

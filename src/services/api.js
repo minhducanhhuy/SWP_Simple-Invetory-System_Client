@@ -1,8 +1,9 @@
 // src/services/api.js
 import axios from "axios";
+import { logoutUser } from "./authService";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3001",
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3040",
 
   // --- DÒNG QUAN TRỌNG NHẤT ---
   // Tự động gửi Cookie đi kèm trong mọi request (GET, POST, PUT...)
@@ -23,6 +24,13 @@ api.interceptors.response.use(
       // window.location.href = '/login';
       console.log("Phiên đăng nhập hết hạn");
     }
+
+    if (error.response?.status === 403) {
+      alert(error.response.data.message || "Tài khoản đã bị khóa!");
+      logoutUser();
+      window.location.href = "/login";
+    }
+
     return Promise.reject(error);
   },
 );
