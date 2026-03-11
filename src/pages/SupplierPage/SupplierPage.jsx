@@ -12,12 +12,21 @@ import {
   FaFilter,
   FaSortAmountDown,
 } from "react-icons/fa";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"; // ĐÃ THÊM ICON CHO PHÂN TRANG
+
 import {
   getSuppliers,
   createSupplier,
   updateSupplier,
   deleteSupplier,
 } from "../../services/supplierService";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from "../../components/pagination/Pagination";
 
 // --- COMPONENT: MODAL FORM (Giữ nguyên không đổi) ---
 const SupplierModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
@@ -34,11 +43,12 @@ const SupplierModal = ({ isOpen, onClose, onSave, initialData, isEditing }) => {
       return alert("Vui lòng nhập Mã và Tên!");
     onSave(formData);
   };
+  
   const formatMoney = (value) => {
-  if (!value) return "";
-  const number = value.toString().replace(/\D/g, "");
-  return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+    if (!value) return "";
+    const number = value.toString().replace(/\D/g, "");
+    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -177,6 +187,10 @@ const SupplierPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
+  // --- STATE PHÂN TRANG MỚI THÊM VÀO ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Đổi số này nếu muốn hiển thị nhiều/ít hơn 10 dòng 1 trang
+
   const initialForm = {
     code: "",
     name: "",
@@ -201,6 +215,11 @@ const SupplierPage = () => {
   useEffect(() => {
     fetchSuppliers();
   }, []);
+
+  // Reset về trang 1 mỗi khi người dùng tìm kiếm hoặc lọc
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterType, sortOption]);
 
   const handleSave = async (data) => {
     try {
@@ -249,9 +268,9 @@ const SupplierPage = () => {
 
     // 2. Lọc theo trạng thái nợ (Filter)
     if (filterType === "DEBT") {
-      result = result.filter((s) => Number(s.debt) > 0); // Chỉ hiện người mình đang nợ
+      result = result.filter((s) => Number(s.debt) > 0); 
     } else if (filterType === "CREDIT") {
-      result = result.filter((s) => Number(s.debt) < 0); // Chỉ hiện người đang nợ mình
+      result = result.filter((s) => Number(s.debt) < 0); 
     }
 
     // 3. Sắp xếp (Sort)
@@ -261,9 +280,9 @@ const SupplierPage = () => {
           return a.name.localeCompare(b.name);
         case "NAME_DESC":
           return b.name.localeCompare(a.name);
-        case "DEBT_DESC": // Nợ nhiều nhất lên đầu
+        case "DEBT_DESC": 
           return Number(b.debt || 0) - Number(a.debt || 0);
-        case "DEBT_ASC": // Nợ ít nhất (hoặc âm nhiều nhất) lên đầu
+        case "DEBT_ASC": 
           return Number(a.debt || 0) - Number(b.debt || 0);
         default:
           return 0;
@@ -272,6 +291,35 @@ const SupplierPage = () => {
 
     return result;
   }, [suppliers, searchTerm, filterType, sortOption]);
+
+  // --- LOGIC TÍNH TOÁN PHÂN TRANG MỚI THÊM VÀO ---
+  const totalPages = Math.ceil(processedSuppliers.length / itemsPerPage);
+  
+  // Chỉ lấy đúng số lượng Item cho trang hiện tại
+  const currentItems = processedSuppliers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Thuật toán tạo dãy số trang có dấu "..."
+  const getPaginationNumbers = () => {
+    const delta = 1;
+    const range = [];
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+    if (currentPage - delta > 2) range.unshift("...");
+    if (currentPage + delta < totalPages - 1) range.push("...");
+    
+    range.unshift(1);
+    if (totalPages > 1) range.push(totalPages);
+    
+    return range;
+  };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
@@ -296,7 +344,6 @@ const SupplierPage = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {/* --- TOOLBAR: SEARCH - FILTER - SORT --- */}
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 items-center bg-gray-50/50">
-          {/* 1. Search */}
           <div className="relative flex-1 min-w-[200px]">
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -307,7 +354,6 @@ const SupplierPage = () => {
             />
           </div>
 
-          {/* 2. Filter Dropdown */}
           <div className="flex items-center gap-2">
             <FaFilter className="text-gray-400 text-sm" />
             <select
@@ -321,7 +367,6 @@ const SupplierPage = () => {
             </select>
           </div>
 
-          {/* 3. Sort Dropdown */}
           <div className="flex items-center gap-2">
             <FaSortAmountDown className="text-gray-400 text-sm" />
             <select
@@ -366,7 +411,8 @@ const SupplierPage = () => {
                   </td>
                 </tr>
               ) : (
-                processedSuppliers.map((s) => (
+                // ĐÃ SỬA THÀNH currentItems THAY VÌ processedSuppliers
+                currentItems.map((s) => (
                   <tr
                     key={s.id}
                     className="hover:bg-blue-50/50 transition-colors group"
@@ -453,6 +499,63 @@ const SupplierPage = () => {
               )}
             </tbody>
           </table>
+
+          {/* --- GIAO DIỆN PHÂN TRANG SHADCN --- */}
+          {totalPages > 0 && (
+            <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-200 rounded-b-xl">
+              <Pagination className="justify-end w-auto mx-0">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(prev => Math.max(prev - 1, 1));
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      aria-label="Trang trước"
+                    >
+                      <ChevronLeftIcon className="w-4 h-4" />
+                    </PaginationLink>
+                  </PaginationItem>
+
+                  {getPaginationNumbers().map((number, index) => (
+                    <PaginationItem key={index}>
+                      {number === '...' ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(number);
+                          }}
+                          isActive={currentPage === number}
+                          className="cursor-pointer"
+                        >
+                          {number}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      aria-label="Trang sau"
+                    >
+                      <ChevronRightIcon className="w-4 h-4" />
+                    </PaginationLink>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       </div>
 
