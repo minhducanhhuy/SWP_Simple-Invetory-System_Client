@@ -15,6 +15,7 @@ import CustomerPage from "./pages/CustomerPage/CustomerPage";
 import SupplierPage from "./pages/SupplierPage/SupplierPage";
 import ProductPage from "./pages/ProductPage/ProductPage";
 import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
+import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -53,6 +54,7 @@ function App() {
               <Route path="/employees" element={<EmployeePage />} />
               <Route path="/locations" element={<LocationPage />} />
               <Route path="/suppliers" element={<SupplierPage />} />
+              <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
             </Route>
           </Routes>
         </LocationProvider>
