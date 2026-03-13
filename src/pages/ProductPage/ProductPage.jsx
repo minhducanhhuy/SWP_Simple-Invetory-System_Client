@@ -4,7 +4,7 @@ import ProductHeader from "./components/ProductHeader";
 import ProductToolbar from "./components/ProductToolbar";
 import ProductTable from "./components/ProductTable";
 import ProductModal from "./components/ProductModal";
-
+import { useSearchParams } from "react-router-dom";
 // Import Service và Context
 import {
   getProducts,
@@ -18,6 +18,11 @@ import StockCardModal from "./components/StockCardModal";
 import { AuthContext } from "../../context/AuthContext";
 
 const ProductPage = () => {
+  const [params] = useSearchParams();
+
+const minPrice = params.get("minPrice");
+const maxPrice = params.get("maxPrice");
+const sortPrice = params.get("sortPrice");
   const { user } = useContext(AuthContext); // Lấy thông tin user
   const isSalesperson = user?.role === "SALESPERSON"; // Biến kiểm tra quyền
 
@@ -73,7 +78,10 @@ const ProductPage = () => {
         const data = await getProducts({
           search: searchTerm,
           categoryId: categoryFilter,
-          locationId: currentLocation.id, // Truyền ID kho để lấy tồn kho tương ứng
+          locationId: currentLocation.id,
+          minPrice,
+  maxPrice,
+  sortPrice, // Truyền ID kho để lấy tồn kho tương ứng
         });
         setProducts(data);
       } catch (error) {
@@ -89,7 +97,7 @@ const ProductPage = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [currentLocation, searchTerm, categoryFilter]);
+  }, [currentLocation, searchTerm, categoryFilter, minPrice, maxPrice, sortPrice]);
 
   // --- KHỐI 2: HANDLERS (XỬ LÝ SỰ KIỆN) ---
 

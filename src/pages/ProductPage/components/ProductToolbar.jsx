@@ -1,5 +1,6 @@
 import React from "react";
 import { FaPlus, FaSearch, FaFilter, FaChevronDown } from "react-icons/fa";
+import ProductPriceFilterBar from "./ProductPriceFilterBar";
 
 const ProductToolbar = ({
   onOpenModal,
@@ -12,7 +13,7 @@ const ProductToolbar = ({
 }) => {
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100">
-      <div className="flex flex-1 flex-wrap items-center gap-3">
+      <div className="flex flex-1 items-center gap-3">
         {/* [LOGIC MỚI] Chỉ hiện nút Thêm nếu KHÔNG phải Salesperson */}
         {!isSalesperson && (
           <button
@@ -28,7 +29,9 @@ const ProductToolbar = ({
           {/* Icon Filter bên trái */}
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 z-10">
             <FaFilter className="h-3 w-3" />
+            
           </div>
+          
 
           <select
             className="appearance-none w-full min-w-[200px] cursor-pointer rounded-lg 
@@ -54,6 +57,7 @@ const ProductToolbar = ({
             <FaChevronDown className="h-3 w-3" />
           </div>
         </div>
+        <ProductPriceFilterBar />
       </div>
 
       {/* Search Box */}

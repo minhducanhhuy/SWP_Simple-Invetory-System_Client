@@ -13,7 +13,7 @@ import EmployeePage from "./pages/EmployeePage/EmployeePage";
 import LocationPage from "./pages/LocationPage/LocationPage";
 import ProductPage from "./pages/ProductPage/ProductPage";
 import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
-
+import ProductPageWithPriceFilter from "./pages/ProductPage/ProductPageWithPriceFilter";
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
 
@@ -40,7 +40,7 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/products" element={<ProductPage />} />
+              <Route path="/products" element={<ProductPageWithPriceFilter />} />
               <Route path="/master-data" element={<MasterDataPage />} />
               <Route path="/stock-tickets" element={<StockTicketListPage />} />
               <Route path="/employees" element={<EmployeePage />} />
