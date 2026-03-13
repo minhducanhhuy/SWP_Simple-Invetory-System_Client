@@ -51,6 +51,17 @@ const Sidebar = () => {
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
     {
+      label: "Đối tác & Vận hành",
+      items: [
+        {
+          path: "/suppliers",
+          label: "Nhà cung cấp",
+          icon: <FaTruck className="h-5 w-5" />,
+          allowedRoles: ["OWNER", "MANAGER"], // ADMIN_SYSTEM không thấy
+        },
+      ],
+    },
+    {
       label: "Quản lý kho",
       items: [
         {
@@ -74,6 +85,17 @@ const Sidebar = () => {
       ],
     },
     {
+      label: "Đối tác & Vận hành",
+      items: [
+        {
+          path: "/customers",
+          label: "Khách hàng",
+          icon: <FaUsers className="h-5 w-5" />,
+          allowedRoles: ["SALESPERSON"], // ADMIN_SYSTEM không thấy
+        },
+      ],
+    },
+    {
       label: "Quản trị hệ thống", // Group mới cho Admin System
       items: [
         {
@@ -92,7 +114,7 @@ const Sidebar = () => {
           path: "/locations",
           label: "Quản lý Kho",
           icon: <FaWarehouse className="h-5 w-5" />, // Nhớ import icon
-          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ Admin/Owner mới thấy
+          allowedRoles: ["OWNER"], // Chỉ Admin/Owner mới thấy
         },
       ],
     },

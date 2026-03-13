@@ -41,3 +41,13 @@ export const deleteUnit = async (id) => {
   const response = await api.delete(`/master-data/units/${id}`);
   return response.data;
 };
+
+export const syncCategories = async (data) => {
+  const response = await api.post("/master-data/categories/sync", data);
+  return response.data;
+};
+
+export const syncUnits = async (data) => {
+  const response = await api.post("/master-data/units/sync", data);
+  return response.data;
+};

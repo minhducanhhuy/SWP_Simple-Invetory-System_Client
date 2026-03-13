@@ -181,7 +181,7 @@ const LocationPage = () => {
                     <span
                       className={`px-2 py-1 rounded text-xs font-bold ${loc.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
                     >
-                      {loc.isActive ? "Hoạt động" : "Tạm khóa"}
+                      {loc.isActive ? "Hoạt động" : "Vô hiệu Hóa"}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
