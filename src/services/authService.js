@@ -34,3 +34,15 @@ export const acceptInvite = async (data) => {
 
   return response.data;
 };
+
+// Thêm vào cuối file
+export const forgotPassword = async (email) => {
+  const response = await api.post("/auth/forgot-password", { email });
+  return response.data;
+};
+
+export const resetPassword = async (data) => {
+  // data: { token, newPassword }
+  const response = await api.post("/auth/reset-password", data);
+  return response.data;
+};

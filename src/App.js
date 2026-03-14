@@ -18,6 +18,9 @@ import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import ProductPageWithPriceFilter from "./pages/ProductPage/ProductPageWithPriceFilter";
 import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
+import ResetPasswordPage from "./pages/LoginPage/ResetPasswordPage";
+import ForgotPasswordPage from "./pages/LoginPage/ForgotPasswordPage";
+import AcceptInvitePage from "./pages/LoginPage/AcceptInvitePage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -34,8 +37,12 @@ function App() {
       <AuthProvider>
         <LocationProvider>
           <Routes>
-            {/* Route Đăng nhập (Công khai) */}
+            {/* PUBLIC ROUTES */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/accept-invite" element={<AcceptInvitePage />} />
+
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             <Route
               path="/"
@@ -45,7 +52,10 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/products" element={<ProductPageWithPriceFilter />} />
+              <Route
+                path="/products"
+                element={<ProductPageWithPriceFilter />}
+              />
               <Route path="/customers" element={<CustomerPage />} />
               <Route path="/products" element={<ProductPage />} />
               <Route path="/master-data" element={<MasterDataPage />} />
