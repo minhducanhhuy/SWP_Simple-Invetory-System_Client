@@ -10,6 +10,14 @@ import TicketCatalog from "./components/TicketCatalog";
 import TicketCart from "./components/TicketCart";
 import { useLocation } from "../../context/LocationContext";
 
+const REASON_MAP = {
+  IMPORT: "BUY",
+  SELL: "SELL",
+  TRANSFER: "TRANSFER",
+  RETURN_TO_SUPP: "RETURN_TO_SUPP",
+  RETURN_FROM_CUST: "RETURN_FROM_CUST",
+};
+
 const CreateTicketPage = () => {
   const navigate = useNavigate();
   const { currentLocation } = useLocation();
@@ -78,7 +86,7 @@ const CreateTicketPage = () => {
       const existItem = prev.find((item) => item.product.id === product.id);
       // Logic giá mặc định: Nhập -> Giá vốn, Xuất -> Giá bán, Điều chỉnh -> Giá vốn
       const defaultPrice =
-        ticketType === "IMPORT" || ticketType === "ADJUSTMENT"
+        ticketType === "IMPORT" || ticketType === "EXPORT"
           ? Number(product.costPrice)
           : Number(product.sellPrice);
 
@@ -120,6 +128,8 @@ const CreateTicketPage = () => {
 
   // --- SUBMIT ---
   const handleSubmit = async () => {
+    const finalReason =
+      ticketType === "ADJUSTMENT" ? reason : REASON_MAP[ticketType];
     if (!currentLocation) return alert("Chưa chọn kho làm việc!");
     if (cart.length === 0) return alert("Phiếu chưa có sản phẩm nào!");
 
@@ -133,16 +143,14 @@ const CreateTicketPage = () => {
       quantity: Number(item.quantity),
       price: Number(item.price),
     }));
-
+    //sửa payload để có reason
     const payload = {
       type: ticketType,
-      note: note,
+      reason: finalReason,
+      note,
       status: "COMPLETED",
       details,
-      // [MỚI] Chỉ gửi reason nếu là ADJUSTMENT
-      reason: ticketType === "ADJUSTMENT" ? reason : undefined,
     };
-
     switch (ticketType) {
       case "IMPORT":
         payload.destLocationId = currentLocation.id;
@@ -196,7 +204,13 @@ const CreateTicketPage = () => {
         ticketType={ticketType}
         setTicketType={(type) => {
           setTicketType(type);
-          setReason(""); // Reset reason khi đổi loại phiếu
+
+          if (type === "ADJUSTMENT") {
+            setReason("");
+          } else {
+            setReason(REASON_MAP[type] || "");
+          }
+
           setCart([]);
           setPartnerId("");
           setTargetLocationId("");

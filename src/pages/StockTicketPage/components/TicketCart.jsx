@@ -51,7 +51,7 @@ const TicketCart = ({
           allowedRoles: ["WAREHOUSE_STAFF"],
         },
         {
-          value: "SELL",
+          value: "EXPORT",
           label: "Xuất Bán Lẻ",
           allowedRoles: ["WAREHOUSE_STAFF"],
         },
