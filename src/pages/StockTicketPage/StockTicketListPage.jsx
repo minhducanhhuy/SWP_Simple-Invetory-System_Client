@@ -42,7 +42,7 @@ const StockTicketListPage = () => {
             <FaArrowDown className="text-[10px]" /> Nhập hàng
           </span>
         );
-      case "SELL":
+      case "EXPORT":
         return (
           <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md text-xs font-bold border border-blue-200">
             <FaArrowUp className="text-[10px]" /> Bán hàng

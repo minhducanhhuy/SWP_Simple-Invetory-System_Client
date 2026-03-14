@@ -4,16 +4,11 @@ import {
   FaFloppyDisk,
   FaTruckArrowRight,
   FaCartShopping,
-  FaRightLeft,
   FaCalendarDays,
   FaMinus,
   FaPlus,
   FaXmark,
-  FaClipboardCheck,
-  FaTrashCan,
-  FaRotateLeft,
   FaUserTag,
-  FaWarehouse,
 } from "react-icons/fa6";
 import { AuthContext } from "../../../context/AuthContext";
 
@@ -21,8 +16,8 @@ const TicketCart = ({
   cart,
   ticketType,
   setTicketType,
-  reason,
-  setReason,
+  reason, // Props reason từ Cha truyền xuống
+  setReason, // Hàm setReason từ Cha truyền xuống
   note,
   setNote,
   targetLocationId,
@@ -40,63 +35,44 @@ const TicketCart = ({
   const { user } = useContext(AuthContext);
   const userRole = user?.role || "";
 
-  // 1. Cấu hình danh sách Loại phiếu
+  // 1. Chỉ còn 2 loại phiếu chính
   const TICKET_OPTIONS = [
     {
-      group: "Nhập / Xuất Chính",
+      group: "Loại Phiếu Kho",
       options: [
         {
           value: "IMPORT",
-          label: "Nhập Hàng NCC",
-          allowedRoles: ["WAREHOUSE_STAFF"],
+          label: "Phiếu Nhập (IMPORT)",
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "ADMIN_SYSTEM", "OWNER"],
         },
         {
           value: "EXPORT",
-          label: "Xuất Bán Lẻ",
-          allowedRoles: ["WAREHOUSE_STAFF"],
-        },
-      ],
-    },
-    {
-      group: "Kho & Nội Bộ",
-      options: [
-        {
-          value: "TRANSFER",
-          label: "Chuyển Kho",
-          allowedRoles: ["MANAGER"],
-        },
-        {
-          value: "ADJUSTMENT",
-          label: "Kiểm Kê / Điều Chỉnh",
-          allowedRoles: ["MANAGER"],
-        },
-      ],
-    },
-    {
-      group: "Trả Hàng",
-      options: [
-        {
-          value: "RETURN_TO_SUPP",
-          label: "Trả Hàng NCC",
-          allowedRoles: ["MANAGER"],
-        },
-        {
-          value: "RETURN_FROM_CUST",
-          label: "Khách Trả Hàng",
-          allowedRoles: ["ADMIN_SYSTEM", "OWNER", "MANAGER", "SALESPERSON"],
+          label: "Phiếu Xuất (EXPORT)",
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "ADMIN_SYSTEM", "OWNER"],
         },
       ],
     },
   ];
 
-  // [MỚI] Danh sách Lý do (Khớp với Enum ReasonCode Backend)
-  const REASON_OPTIONS = [
-    { value: "SCRAP", label: "Xuất Hủy (Hết hạn, vỡ...)" },
-    { value: "INTERNAL_USE", label: "Xuất Dùng Nội Bộ" },
-    { value: "GIFT", label: "Xuất Biếu Tặng" },
-  ];
+  // 2. Mapping lý do chi tiết (Khớp 100% với Enum DB)
+  const REASON_MAPPING = {
+    IMPORT: [
+      { value: "BUY", label: "Nhập mua hàng" },
+      { value: "RETURN_FROM_CUST", label: "Khách trả hàng" },
+      { value: "TRANSFER", label: "Nhận chuyển kho" },
+      { value: "ADJUSTMENT", label: "Điều chỉnh kho (Tăng)" },
+    ],
+    EXPORT: [
+      { value: "SELL", label: "Xuất bán hàng" },
+      { value: "RETURN_TO_SUPP", label: "Trả hàng NCC" },
+      { value: "SCRAP", label: "Xuất hủy (Vỡ, hỏng...)" },
+      { value: "INTERNAL_USE", label: "Dùng nội bộ" },
+      { value: "GIFT", label: "Xuất biếu tặng" },
+      { value: "TRANSFER", label: "Xuất chuyển kho" },
+      { value: "ADJUSTMENT", label: "Điều chỉnh kho (Giảm)" },
+    ],
+  };
 
-  // 2. Logic lọc quyền
   const availableOptions = useMemo(() => {
     return TICKET_OPTIONS.map((group) => ({
       ...group,
@@ -108,7 +84,7 @@ const TicketCart = ({
     })).filter((group) => group.options.length > 0);
   }, [userRole]);
 
-  // 3. Tự động chọn loại phiếu hợp lệ đầu tiên nếu loại hiện tại bị ẩn
+  // Tự động gán loại phiếu mặc định nếu mảng options thay đổi
   useEffect(() => {
     if (availableOptions.length > 0) {
       const flatOptions = availableOptions.flatMap((g) =>
@@ -124,81 +100,41 @@ const TicketCart = ({
     (sum, item) => sum + Number(item.quantity) * Number(item.price),
     0,
   );
-
   const formatMoney = (amount) =>
     new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
     }).format(amount);
 
+  // 3. UI Config cơ bản
   const config = useMemo(() => {
     switch (ticketType) {
       case "IMPORT":
         return {
           theme: "bg-emerald-50 text-emerald-700 border-emerald-200",
           icon: <FaTruckArrowRight />,
-          label: "Nhập Hàng NCC",
-          requirePartner: true,
-          partnerType: "SUPPLIER",
-          partnerLabel: "Nhà Cung Cấp",
+          label: "Nhập Kho",
         };
-      case "ADJUSTMENT":
-        return {
-          theme: "bg-purple-50 text-purple-700 border-purple-200",
-          icon: <FaClipboardCheck />,
-          label: "Kiểm Kê / Điều Chỉnh",
-          requireReason: true, // [MỚI] Cờ báo hiệu cần chọn lý do
-        };
-      case "SELL":
+      case "EXPORT":
         return {
           theme: "bg-blue-50 text-blue-700 border-blue-200",
           icon: <FaCartShopping />,
-          label: "Xuất Bán Lẻ",
-          requirePartner: true,
-          partnerType: "CUSTOMER",
-          partnerLabel: "Khách Hàng",
-        };
-      case "TRANSFER":
-        return {
-          theme: "bg-orange-50 text-orange-700 border-orange-200",
-          icon: <FaRightLeft />,
-          label: "Chuyển Kho",
-          requireDest: true,
-        };
-      case "RETURN_TO_SUPP":
-        return {
-          theme: "bg-yellow-50 text-yellow-700 border-yellow-200",
-          icon: <FaRotateLeft />,
-          label: "Trả Hàng NCC",
-          requirePartner: true,
-          partnerType: "SUPPLIER",
-          partnerLabel: "Nhà Cung Cấp",
-        };
-      case "RETURN_FROM_CUST":
-        return {
-          theme: "bg-teal-50 text-teal-700 border-teal-200",
-          icon: <FaRotateLeft />,
-          label: "Khách Trả Hàng",
-          requirePartner: true,
-          partnerType: "CUSTOMER",
-          partnerLabel: "Khách Hàng Trả",
+          label: "Xuất Kho",
         };
       default:
         return { theme: "bg-gray-50", icon: null, label: "Phiếu Kho" };
     }
   }, [ticketType]);
 
-  // Validate Submit
+  // 4. Validate trước khi bấm Hoàn Tất
   function handleSubmitWithValidate() {
-    if (config.requireDest && !targetLocationId) {
-      return alert("Vui lòng chọn kho đích!");
-    }
-    if (config.requirePartner && !partnerId) {
-      return alert(`Vui lòng chọn ${config.partnerLabel}!`);
-    }
-    if (config.requireReason && !reason) {
-      return alert("Vui lòng chọn Lý do điều chỉnh!");
-    }
+    if (!reason) return alert("Vui lòng chọn Lý do thực hiện phiếu!");
+    if (reason === "TRANSFER" && !targetLocationId)
+      return alert("Vui lòng chọn Kho Đích / Kho Nguồn!");
+    if (["BUY", "RETURN_TO_SUPP"].includes(reason) && !partnerId)
+      return alert("Vui lòng chọn Nhà cung cấp!");
+    if (["SELL", "RETURN_FROM_CUST"].includes(reason) && !partnerId)
+      return alert("Vui lòng chọn Khách hàng!");
     onSubmit();
   }
 
@@ -221,7 +157,12 @@ const TicketCart = ({
           <select
             className="text-xs font-bold uppercase bg-white/80 border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer max-w-[160px]"
             value={ticketType}
-            onChange={(e) => setTicketType(e.target.value)}
+            onChange={(e) => {
+              setTicketType(e.target.value);
+              setReason(""); // Khi đổi Nhập/Xuất thì reset Lý do
+              setPartnerId("");
+              setTargetLocationId("");
+            }}
           >
             {availableOptions.map((group, idx) => (
               <optgroup key={idx} label={group.group}>
@@ -237,39 +178,43 @@ const TicketCart = ({
 
         {/* FORM FIELDS */}
         <div className="space-y-3">
-          {/* [MỚI] Dropdown Reason (Chỉ hiện cho ADJUSTMENT) */}
-          {config.requireReason && (
-            <div className="animate-in fade-in slide-in-from-top-1 bg-white/50 p-2 rounded-lg border border-purple-200/50">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-purple-700 mb-1 block">
-                Lý do điều chỉnh <span className="text-red-500">*</span>
-              </label>
-              <select
-                className="w-full text-sm p-2 rounded-lg border border-purple-200 bg-white focus:ring-2 focus:ring-purple-400 outline-none shadow-sm text-purple-800 font-medium"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-              >
-                <option value="">-- Chọn lý do --</option>
-                {REASON_OPTIONS.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* --- DROPDOWN LÝ DO Ở ĐÂY --- */}
+          <div className="animate-in fade-in slide-in-from-top-1 bg-white/50 p-2 rounded-lg border border-gray-200 shadow-sm">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-gray-700 mb-1 block">
+              Lý do thực hiện <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="w-full text-sm p-2.5 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-sm font-medium"
+              value={reason}
+              onChange={(e) => {
+                setReason(e.target.value);
+                // Đổi lý do thì tự reset form bên dưới để tránh chọn nhầm dữ liệu cũ
+                setPartnerId("");
+                setTargetLocationId("");
+              }}
+            >
+              <option value="">-- Chọn lý do --</option>
+              {REASON_MAPPING[ticketType]?.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {/* Kho Đích */}
-          {config.requireDest && (
+          {/* Kho Đích / Kho Nguồn (CHỈ HIỆN KHI CHỌN CHUYỂN KHO) */}
+          {reason === "TRANSFER" && (
             <div className="animate-in fade-in slide-in-from-top-1">
               <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-1 block">
-                Chuyển đến kho
+                {ticketType === "EXPORT" ? "Chuyển đến kho" : "Nhận từ kho"}{" "}
+                <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full text-sm p-2.5 rounded-xl border border-orange-200 bg-white focus:ring-2 focus:ring-orange-400 outline-none shadow-sm"
+                className="w-full text-sm p-2.5 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
                 value={targetLocationId}
                 onChange={(e) => setTargetLocationId(e.target.value)}
               >
-                <option value="">-- Chọn kho nhận hàng --</option>
+                <option value="">-- Chọn kho --</option>
                 {otherLocations.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.name}
@@ -279,11 +224,16 @@ const TicketCart = ({
             </div>
           )}
 
-          {/* Đối Tác */}
-          {config.requirePartner && (
+          {/* Đối Tác (CHỈ HIỆN KHI MUA, BÁN VÀ TRẢ HÀNG) */}
+          {["BUY", "SELL", "RETURN_FROM_CUST", "RETURN_TO_SUPP"].includes(
+            reason,
+          ) && (
             <div className="animate-in fade-in slide-in-from-top-1">
               <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-1 block">
-                {config.partnerLabel}
+                {["BUY", "RETURN_TO_SUPP"].includes(reason)
+                  ? "Nhà Cung Cấp"
+                  : "Khách Hàng"}{" "}
+                <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <FaUserTag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -293,7 +243,7 @@ const TicketCart = ({
                   onChange={(e) => setPartnerId(e.target.value)}
                 >
                   <option value="">-- Chọn đối tượng --</option>
-                  {config.partnerType === "SUPPLIER"
+                  {["BUY", "RETURN_TO_SUPP"].includes(reason)
                     ? suppliers.map((s) => (
                         <option key={s.id} value={s.id}>
                           {s.name}
@@ -340,7 +290,6 @@ const TicketCart = ({
               key={idx}
               className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex gap-3 group"
             >
-              {/* Product Info... (Giữ nguyên như cũ) */}
               <div className="w-14 h-14 bg-gray-100 rounded-xl shrink-0 overflow-hidden border border-gray-100">
                 <img
                   src={item.product.imageUrl || "https://placehold.co/50"}
