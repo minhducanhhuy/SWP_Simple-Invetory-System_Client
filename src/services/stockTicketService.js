@@ -16,6 +16,7 @@ export const getStockTicketById = async (id) => {
 export const createStockTicket = async (ticketData) => {
   // ticketData bao gồm: type, note, sourceLocationId, destLocationId, details: []
   const response = await api.post("/stock-tickets", ticketData);
+
   return response.data;
 };
 
