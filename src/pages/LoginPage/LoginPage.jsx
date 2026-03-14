@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
+import { Link, useNavigate } from "react-router-dom"; // 1. Import useNavigate
 import "./LoginPage.css";
 import { validatePassword, validateUsername } from "../../utils/validators";
 import { loginUser } from "../../services/authService";
@@ -136,9 +136,10 @@ const LoginPage = () => {
 
           {/* Password Input */}
           <div className="login-form__group">
-            <label htmlFor="password" className="login-form__label">
+            <label htmlFor="password" className="login-form__label mb-0">
               MẬT KHẨU
             </label>
+
             <input
               type="password"
               id="password"
@@ -150,9 +151,19 @@ const LoginPage = () => {
               value={formData.password}
               onChange={handleChange}
             />
+
             {errors.password && (
               <span className="login-form__message">{errors.password}</span>
             )}
+
+            <div className="mt-2">
+              <Link
+                to="/forgot-password"
+                className=" text-xs font-semibold text-blue-600 hover:text-blue-800 my-8"
+              >
+                Quên mật khẩu?
+              </Link>
+            </div>
           </div>
 
           {/* API Error Message */}
