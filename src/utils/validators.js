@@ -1,6 +1,6 @@
 /**
  * Kiểm tra tính hợp lệ của mật khẩu
- * Rule: Min 6 chars, 1 hoa, 1 thường, 1 đặc biệt/số
+ * Rule: Min 6 chars, 1 hoa, 1 thường, 1 đặc biệt, 1 số
  */
 export const validatePassword = (password) => {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
