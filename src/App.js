@@ -16,6 +16,8 @@ import SupplierPage from "./pages/SupplierPage/SupplierPage";
 import ProductPage from "./pages/ProductPage/ProductPage";
 import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import ProductPageWithPriceFilter from "./pages/ProductPage/ProductPageWithPriceFilter";
+import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -43,6 +45,7 @@ function App() {
                 </ProtectedRoute>
               }
             >
+              <Route path="/products" element={<ProductPageWithPriceFilter />} />
               <Route path="/customers" element={<CustomerPage />} />
               <Route path="/products" element={<ProductPage />} />
               <Route path="/master-data" element={<MasterDataPage />} />
@@ -55,6 +58,7 @@ function App() {
               <Route path="/locations" element={<LocationPage />} />
               <Route path="/suppliers" element={<SupplierPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
             </Route>
           </Routes>
         </LocationProvider>
