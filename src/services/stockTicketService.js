@@ -23,3 +23,8 @@ export const getStockTicketDetail = async (id) => {
   const response = await api.get(`/stock-tickets/${id}`);
   return response.data;
 };
+
+export const approveStockTicket = async (id) => {
+  const response = await api.patch(`/stock-tickets/${id}/approve`);
+  return response.data;
+};
