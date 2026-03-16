@@ -35,3 +35,8 @@ export const deleteLocation = async (id) => {
   const response = await api.delete(`/locations/${id}`);
   return response.data;
 };
+
+export const getAllActiveLocations = async () => {
+  const res = await api.get("/locations/all-active");
+  return res.data;
+};

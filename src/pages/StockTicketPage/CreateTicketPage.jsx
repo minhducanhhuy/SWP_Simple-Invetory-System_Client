@@ -9,22 +9,18 @@ import { getCustomers } from "../../services/customerService";
 import TicketCatalog from "./components/TicketCatalog";
 import TicketCart from "./components/TicketCart";
 import { useLocation } from "../../context/LocationContext";
+import { getAllActiveLocations } from "../../services/locationService";
 
-const REASON_MAP = {
-  IMPORT: "BUY",
-  SELL: "SELL",
-  TRANSFER: "TRANSFER",
-  RETURN_TO_SUPP: "RETURN_TO_SUPP",
-  RETURN_FROM_CUST: "RETURN_FROM_CUST",
-};
+// [ĐÃ XÓA] TICKET_TYPE_MAP và REASON_MAP cũ vì không còn cần thiết nữa.
+// Dữ liệu từ TicketCart truyền lên đã chuẩn 100% so với Database.
 
 const CreateTicketPage = () => {
   const navigate = useNavigate();
   const { currentLocation } = useLocation();
 
   // --- STATE ---
-  const [ticketType, setTicketType] = useState("IMPORT");
-  const [reason, setReason] = useState(""); // [MỚI] State lý do
+  const [ticketType, setTicketType] = useState("IMPORT"); // Chỉ còn IMPORT hoặc EXPORT
+  const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const [targetLocationId, setTargetLocationId] = useState("");
   const [partnerId, setPartnerId] = useState("");
@@ -41,14 +37,27 @@ const CreateTicketPage = () => {
     const initData = async () => {
       if (!currentLocation) return;
       try {
-        const [prods, locs] = await Promise.all([
+        const [prods, locsResponse] = await Promise.all([
           getProducts({ locationId: currentLocation.id }),
-          getMyLocations(),
+          getAllActiveLocations(),
         ]);
+
+        // 1. Tùy thuộc vào cách bạn setup Axios, dữ liệu mảng có thể nằm trong locsResponse.data
+        const locs = Array.isArray(locsResponse)
+          ? locsResponse
+          : locsResponse?.data || [];
+
+        console.log("👉 [DEBUG] Kho hiện tại ID:", currentLocation.id);
+        console.log("👉 [DEBUG] Tất cả kho từ API:", locs);
+
+        // 2. Lọc bỏ kho hiện tại đang đứng
+        const filteredLocs = locs.filter((l) => l.id !== currentLocation.id);
+        console.log("👉 [DEBUG] Kho đích sau khi lọc:", filteredLocs);
+
         setProducts(prods);
         setOtherLocations(locs.filter((l) => l.id !== currentLocation.id));
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error("❌ [LỖI TẢI DỮ LIỆU KHO]:", error);
       }
     };
     initData();
@@ -61,6 +70,7 @@ const CreateTicketPage = () => {
           getSuppliers(),
           getCustomers(),
         ]);
+
         setSuppliers(supData);
         setCustomers(cusData);
       } catch (error) {
@@ -70,7 +80,7 @@ const CreateTicketPage = () => {
     fetchPartners();
   }, []);
 
-  // Logic Cart (Giữ nguyên)
+  // Logic Cart
   const filteredProducts = useMemo(() => {
     if (!searchTerm) return products;
     const lowerSearch = searchTerm.toLowerCase();
@@ -84,9 +94,9 @@ const CreateTicketPage = () => {
   const addToCart = (product) => {
     setCart((prev) => {
       const existItem = prev.find((item) => item.product.id === product.id);
-      // Logic giá mặc định: Nhập -> Giá vốn, Xuất -> Giá bán, Điều chỉnh -> Giá vốn
+      // [CẬP NHẬT] Logic giá đơn giản hơn: IMPORT -> Giá vốn, EXPORT -> Giá bán
       const defaultPrice =
-        ticketType === "IMPORT" || ticketType === "EXPORT"
+        ticketType === "IMPORT"
           ? Number(product.costPrice)
           : Number(product.sellPrice);
 
@@ -128,55 +138,38 @@ const CreateTicketPage = () => {
 
   // --- SUBMIT ---
   const handleSubmit = async () => {
-    const finalReason =
-      ticketType === "ADJUSTMENT" ? reason : REASON_MAP[ticketType];
     if (!currentLocation) return alert("Chưa chọn kho làm việc!");
     if (cart.length === 0) return alert("Phiếu chưa có sản phẩm nào!");
-
-    // Validate Reason nếu là ADJUSTMENT
-    if (ticketType === "ADJUSTMENT" && !reason) {
-      return alert("Vui lòng chọn Lý do điều chỉnh!");
-    }
+    if (!reason) return alert("Vui lòng chọn Lý do thực hiện phiếu!");
 
     const details = cart.map((item) => ({
       productId: item.product.id,
       quantity: Number(item.quantity),
       price: Number(item.price),
     }));
-    //sửa payload để có reason
+
+    // 1. Tạo Payload gốc (Khớp 100% với DTO ở NestJS)
     const payload = {
       type: ticketType,
-      reason: finalReason,
+      reason: reason,
       note,
       status: "COMPLETED",
       details,
     };
-    switch (ticketType) {
-      case "IMPORT":
-        payload.destLocationId = currentLocation.id;
-        payload.supplierId = partnerId;
-        break;
-      case "RETURN_FROM_CUST":
-        payload.destLocationId = currentLocation.id;
-        payload.customerId = partnerId;
-        break;
-      case "SELL":
-        payload.sourceLocationId = currentLocation.id;
-        payload.customerId = partnerId;
-        break;
-      case "RETURN_TO_SUPP":
-        payload.sourceLocationId = currentLocation.id;
-        payload.supplierId = partnerId;
-        break;
-      case "TRANSFER":
-        payload.sourceLocationId = currentLocation.id;
-        payload.destLocationId = targetLocationId;
-        break;
-      case "ADJUSTMENT": // Bao gồm SCRAP, INTERNAL_USE, GIFT (qua Reason)
-        payload.sourceLocationId = currentLocation.id;
-        break;
-      default:
-        break;
+
+    // 2. [CẬP NHẬT LỚN] Đổ dữ liệu ID Kho và Đối tác cực kỳ thông minh
+    if (ticketType === "IMPORT") {
+      payload.destLocationId = currentLocation.id; // Kho nhận là kho hiện tại
+
+      if (reason === "BUY") payload.supplierId = partnerId;
+      if (reason === "RETURN_FROM_CUST") payload.customerId = partnerId;
+      if (reason === "TRANSFER") payload.sourceLocationId = targetLocationId; // Nhận hàng chuyển từ kho khác đến
+    } else if (ticketType === "EXPORT") {
+      payload.sourceLocationId = currentLocation.id; // Kho xuất là kho hiện tại
+
+      if (reason === "SELL") payload.customerId = partnerId;
+      if (reason === "RETURN_TO_SUPP") payload.supplierId = partnerId;
+      if (reason === "TRANSFER") payload.destLocationId = targetLocationId; // Xuất chuyển đi kho khác
     }
 
     try {
@@ -204,18 +197,11 @@ const CreateTicketPage = () => {
         ticketType={ticketType}
         setTicketType={(type) => {
           setTicketType(type);
-
-          if (type === "ADJUSTMENT") {
-            setReason("");
-          } else {
-            setReason(REASON_MAP[type] || "");
-          }
-
+          setReason("");
           setCart([]);
           setPartnerId("");
           setTargetLocationId("");
         }}
-        // [MỚI] Truyền props reason
         reason={reason}
         setReason={setReason}
         note={note}
