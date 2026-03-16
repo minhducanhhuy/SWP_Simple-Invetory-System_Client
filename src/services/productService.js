@@ -2,16 +2,12 @@
 import api from "./api";
 
 // 1. Lấy danh sách sản phẩm
-export const getProducts = async (params = {}) => {
-  const { search, categoryId, locationId } = params;
-  const config = {
-    params: { search, categoryId },
-    headers: { "x-location-id": locationId }, // Header quan trọng để tính tồn kho
-  };
-  const response = await api.get("/products", config);
-  return response.data;
+export const getProducts = async (params) => {
+  const res = await api.get('/products', { params });
+  return res.data;
 };
 
+  
 // 2. Lấy Metadata (SỬA LẠI ĐOẠN NÀY)
 // Gọi song song 2 API từ MasterDataModule
 export const getProductMetadata = async () => {

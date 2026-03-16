@@ -15,6 +15,12 @@ import CustomerPage from "./pages/CustomerPage/CustomerPage";
 import SupplierPage from "./pages/SupplierPage/SupplierPage";
 import ProductPage from "./pages/ProductPage/ProductPage";
 import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import ProductPageWithPriceFilter from "./pages/ProductPage/ProductPageWithPriceFilter";
+import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
+import ResetPasswordPage from "./pages/LoginPage/ResetPasswordPage";
+import ForgotPasswordPage from "./pages/LoginPage/ForgotPasswordPage";
+import AcceptInvitePage from "./pages/LoginPage/AcceptInvitePage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -31,8 +37,12 @@ function App() {
       <AuthProvider>
         <LocationProvider>
           <Routes>
-            {/* Route Đăng nhập (Công khai) */}
+            {/* PUBLIC ROUTES */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/accept-invite" element={<AcceptInvitePage />} />
+
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             <Route
               path="/"
@@ -42,6 +52,10 @@ function App() {
                 </ProtectedRoute>
               }
             >
+              <Route
+                path="/products"
+                element={<ProductPageWithPriceFilter />}
+              />
               <Route path="/customers" element={<CustomerPage />} />
               <Route path="/products" element={<ProductPage />} />
               <Route path="/master-data" element={<MasterDataPage />} />
@@ -49,10 +63,12 @@ function App() {
               <Route
                 path="/stock-tickets/create"
                 element={<CreateTicketPage />}
-              />           
+              />
               <Route path="/employees" element={<EmployeePage />} />
               <Route path="/locations" element={<LocationPage />} />
               <Route path="/suppliers" element={<SupplierPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
             </Route>
           </Routes>
         </LocationProvider>
