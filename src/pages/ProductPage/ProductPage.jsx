@@ -49,6 +49,7 @@ const sortPrice = params.get("sortPrice");
     costPrice: 0,
     sellPrice: 0,
     imageUrl: "",
+    description: "",
     minStockLevel: 10,
   };
   const [modalData, setModalData] = useState(initialFormState);

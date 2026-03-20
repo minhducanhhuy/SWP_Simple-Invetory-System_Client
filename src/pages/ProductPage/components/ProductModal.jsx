@@ -202,6 +202,19 @@ const ProductModal = ({
                 </div>
               </div>
             </div>
+            {/*Description*/}
+            <div>
+  <label>Mô tả sản phẩm</label>
+  <textarea
+    value={formData.description}
+    onChange={(e) =>
+      setFormData({ ...formData, description: e.target.value })
+    }
+    rows={4}
+    className="w-full border rounded p-2"
+    placeholder="Nhập mô tả sản phẩm..."
+  />
+</div>
 
             {/* Image URL */}
             <div className="md:col-span-2">
