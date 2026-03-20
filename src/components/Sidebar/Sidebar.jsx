@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 import {
+  FaClipboardList,
   FaCube,
   FaChartPie,
   FaBoxes,
@@ -80,6 +81,12 @@ const Sidebar = () => {
           path: "/stock-tickets",
           label: "Lịch sử thay đổi",
           icon: <FaFileInvoice className="h-5 w-5" />,
+          allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
+        },
+        {
+          path: "/stock-take",
+          label: "Kiểm kê",
+          icon: <FaClipboardList className="h-5 w-5" />,
           allowedRoles: ["WAREHOUSE_STAFF", "OWNER", "MANAGER"],
         },
       ],
