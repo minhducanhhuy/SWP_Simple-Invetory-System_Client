@@ -24,7 +24,10 @@ const CreateTicketPage = () => {
   const [note, setNote] = useState("");
   const [targetLocationId, setTargetLocationId] = useState("");
   const [partnerId, setPartnerId] = useState("");
-
+  // Cạnh chỗ khai báo ticketType, reason...
+  const [ticketDate, setTicketDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [products, setProducts] = useState([]);
   const [otherLocations, setOtherLocations] = useState([]);
   const [cart, setCart] = useState([]);
@@ -55,6 +58,7 @@ const CreateTicketPage = () => {
         console.log("👉 [DEBUG] Kho đích sau khi lọc:", filteredLocs);
 
         setProducts(prods);
+        console.log("👉 [KIỂM TRA SẢN PHẨM]:", prods[0]); // <--- THÊM DÒNG NÀY
         setOtherLocations(locs.filter((l) => l.id !== currentLocation.id));
       } catch (error) {
         console.error("❌ [LỖI TẢI DỮ LIỆU KHO]:", error);
@@ -81,16 +85,36 @@ const CreateTicketPage = () => {
   }, []);
 
   // Logic Cart
+  // const filteredProducts = useMemo(() => {
+  //   if (!searchTerm) return products;
+  //   const lowerSearch = searchTerm.toLowerCase();
+  //   return products.filter(
+  //     (p) =>
+  //       p.name.toLowerCase().includes(lowerSearch) ||
+  //       p.sku.toLowerCase().includes(lowerSearch),
+  //   );
+  // }, [products, searchTerm]);
   const filteredProducts = useMemo(() => {
-    if (!searchTerm) return products;
-    const lowerSearch = searchTerm.toLowerCase();
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lowerSearch) ||
-        p.sku.toLowerCase().includes(lowerSearch),
-    );
-  }, [products, searchTerm]);
+    let result = products;
 
+    // 1. LỌC THEO TÊN (Search)
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(lowerSearch) ||
+          p.sku.toLowerCase().includes(lowerSearch),
+      );
+    }
+
+    // 2. LỌC THEO NHÀ CUNG CẤP (Chỉ kích hoạt khi là phiếu IMPORT MUA HÀNG)
+    if (ticketType === "IMPORT" && reason === "BUY" && partnerId) {
+      // Nó sẽ tự động giấu hết các sản phẩm không thuộc NCC này đi
+      result = result.filter((p) => p.supplierId === partnerId);
+    }
+
+    return result;
+  }, [products, searchTerm, ticketType, reason, partnerId]);
   const addToCart = (product) => {
     setCart((prev) => {
       const existItem = prev.find((item) => item.product.id === product.id);
@@ -154,6 +178,7 @@ const CreateTicketPage = () => {
       reason: reason,
       note,
       status: "COMPLETED",
+      date: new Date(ticketDate).toISOString(), // <--- Bổ sung dòng này để gửi ngày lên
       details,
     };
 
@@ -195,6 +220,8 @@ const CreateTicketPage = () => {
       <TicketCart
         cart={cart}
         ticketType={ticketType}
+        ticketDate={ticketDate}
+        setTicketDate={setTicketDate}
         setTicketType={(type) => {
           setTicketType(type);
           setReason("");

@@ -31,6 +31,8 @@ const TicketCart = ({
   onAdjustQuantity,
   onRemoveItem,
   onSubmit,
+  ticketDate,
+  setTicketDate,
 }) => {
   const { user } = useContext(AuthContext);
   const userRole = user?.role || "";
@@ -149,8 +151,17 @@ const TicketCart = ({
             <h2 className="text-lg font-black uppercase flex items-center gap-2">
               {config.icon} {config.label}
             </h2>
+            {/* <div className="flex items-center gap-1 text-xs font-medium opacity-80 mt-1 ml-1">
+              <FaCalendarDays /> {new Date().toLocaleDateString("vi-VN")} */}
+
             <div className="flex items-center gap-1 text-xs font-medium opacity-80 mt-1 ml-1">
-              <FaCalendarDays /> {new Date().toLocaleDateString("vi-VN")}
+              <FaCalendarDays />
+              <input
+                type="date"
+                className="bg-transparent border-b border-dashed border-gray-400 focus:border-blue-500 outline-none ml-1 cursor-pointer font-bold text-gray-700"
+                value={ticketDate}
+                onChange={(e) => setTicketDate(e.target.value)}
+              />
             </div>
           </div>
 
