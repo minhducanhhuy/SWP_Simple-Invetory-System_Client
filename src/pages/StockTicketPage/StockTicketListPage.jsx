@@ -8,6 +8,7 @@ import {
   FaArrowUp,
   FaRightLeft,
   FaEye,
+  FaClipboardList,
 } from "react-icons/fa6"; // Dùng Fa6 cho icon sắc nét hơn
 import TicketDetailModal from "./components/TicketDetailModal";
 
@@ -45,9 +46,17 @@ const StockTicketListPage = () => {
       case "EXPORT":
         return (
           <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md text-xs font-bold border border-blue-200">
-            <FaArrowUp className="text-[10px]" /> Bán hàng
+            <FaArrowUp className="text-[10px]" /> Xuất hàng
           </span>
         );
+
+      case "STOCKTAKE":
+        return (
+          <span className="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md text-xs font-bold border border-purple-200">
+            <FaClipboardList className="text-[10px]" /> Kiểm kê
+          </span>
+        );
+
       case "TRANSFER":
         return (
           <span className="inline-flex items-center gap-1.5 bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md text-xs font-bold border border-orange-200">
