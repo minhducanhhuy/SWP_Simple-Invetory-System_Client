@@ -3,6 +3,9 @@ import { FaClipboardList, FaEye } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
 import { useLocation } from "../../context/LocationContext";
 import { getProducts } from "../../services/productService";
+import * as XLSX from "xlsx"; // <--- Bổ sung thư viện Excel
+import { useRef } from "react"; // <--- Bổ sung useRef
+import { FaFileImport, FaFileExport } from "react-icons/fa6"; // <--- Bổ sung Icon
 import {
   getStockTickets,
   approveStockTicket,
@@ -28,6 +31,8 @@ const StockTakePage = () => {
 
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  // Dùng để reset ô chọn file sau khi upload xong
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const loadStock = async () => {
@@ -82,6 +87,94 @@ const StockTakePage = () => {
     }
   }, [role]);
 
+  // --- HÀM 1: XUẤT FILE EXCEL MẪU ---
+  const handleExportTemplate = () => {
+    if (stockRows.length === 0) {
+      alert("Không có sản phẩm nào để xuất!");
+      return;
+    }
+
+    const excelData = stockRows.map((row, index) => ({
+      STT: index + 1,
+      "Mã SP": row.code,
+      "Tên sản phẩm": row.name,
+      "SL Hệ thống": row.expected,
+      "SL Thực đếm": row.expected, // Mặc định để bằng hệ thống, ai đếm lệch thì sửa file
+      "Lý do chênh lệch": "",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    worksheet["!cols"] = [
+      { wch: 5 },
+      { wch: 15 },
+      { wch: 40 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 30 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Kiem_Ke");
+    XLSX.writeFile(
+      workbook,
+      `Kiem_Ke_${currentLocation?.code}_${new Date().getTime()}.xlsx`,
+    );
+  };
+
+  // --- HÀM NHẬP DỮ LIỆU TỪ EXCEL ---
+  const handleImportExcel = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        // 1. Lọc và xử lý dữ liệu ở ngoài (Tránh React Strict Mode gọi 2 lần)
+        const validUpdates = [];
+        jsonData.forEach((importedRow) => {
+          const sku = importedRow["Mã SP"];
+          const actual = parseInt(importedRow["SL Thực đếm"]);
+          const reason = importedRow["Lý do chênh lệch"] || "";
+
+          if (sku && !isNaN(actual)) {
+            // Math.max(0, actual) để ép số âm từ Excel thành 0 luôn
+            validUpdates.push({ sku, actual: Math.max(0, actual), reason });
+          }
+        });
+
+        // 2. Cập nhật dữ liệu vào bảng
+        setStockRows((prevRows) => {
+          const newRows = [...prevRows];
+          validUpdates.forEach((update) => {
+            const rowIndex = newRows.findIndex((r) => r.code === update.sku);
+            if (rowIndex !== -1) {
+              newRows[rowIndex].actual = update.actual;
+              newRows[rowIndex].reason = update.reason;
+            }
+          });
+          return newRows;
+        });
+
+        // 3. Hiện thông báo 1 lần duy nhất
+        alert(
+          `✅ Đã nhập thành công dữ liệu đếm của ${validUpdates.length} sản phẩm!`,
+        );
+      } catch (error) {
+        alert(
+          "❌ Lỗi đọc file! Vui lòng dùng đúng file mẫu tải về từ hệ thống.",
+        );
+      }
+
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+    reader.readAsArrayBuffer(file);
+  };
   const handleWarehouseChange = (id, field, value) => {
     setStockRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
@@ -115,7 +208,7 @@ const StockTakePage = () => {
       await createStockTicket({
         type: "STOCKTAKE",
         reason: "ADJUSTMENT",
-        status: "PENDING_APPROVAL",
+
         sourceLocationId: currentLocation.id,
         note: "Phiếu kiểm kê định kỳ",
         details: stockRows.map((row) => ({
@@ -207,26 +300,53 @@ const StockTakePage = () => {
 
       {role === "WAREHOUSE_STAFF" || role === "SALESPERSON" ? (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-          <div className="mb-4 flex items-end justify-between">
+          <div className="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
                 Bảng kiểm kê
               </h2>
               <p className="text-xs text-gray-500">
-                Nhập số lượng thực tế và lý do chênh lệch.
+                Nhập tay hoặc dùng file Excel để cập nhật số lượng thực đếm.
               </p>
             </div>
-            <button
-              onClick={handleWarehouseSave}
-              disabled={isSaving}
-              className={`rounded-md px-4 py-2 text-white font-bold transition-all ${
-                isSaving
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
-            >
-              {isSaving ? "Đang lưu phiếu..." : "Lưu phiếu kiểm kê"}
-            </button>
+
+            <div className="flex items-center gap-2">
+              {/* NÚT XUẤT EXCEL MẪU */}
+              <button
+                onClick={handleExportTemplate}
+                className="rounded-md px-3 py-2 bg-emerald-50 text-emerald-600 border border-emerald-200 font-bold text-sm transition-all hover:bg-emerald-100 flex items-center gap-2 shadow-sm"
+              >
+                <FaFileExport /> Tải file mẫu
+              </button>
+
+              {/* NÚT IMPORT EXCEL (Nút giả để click, thẻ input thật bị ẩn đi) */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="rounded-md px-3 py-2 bg-orange-50 text-orange-600 border border-orange-200 font-bold text-sm transition-all hover:bg-orange-100 flex items-center gap-2 shadow-sm"
+              >
+                <FaFileImport /> Tải file đếm lên
+              </button>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleImportExcel}
+              />
+
+              {/* NÚT LƯU PHIẾU GỐC CỦA BẠN */}
+              <button
+                onClick={handleWarehouseSave}
+                disabled={isSaving}
+                className={`rounded-md px-4 py-2 text-white font-bold transition-all shadow-sm flex items-center gap-2 ml-2 ${
+                  isSaving
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
+              >
+                <FaClipboardList /> {isSaving ? "Đang xử lý..." : "Nộp phiếu"}
+              </button>
+            </div>
           </div>
 
           {loadingStock ? (
@@ -266,13 +386,18 @@ const StockTakePage = () => {
                           type="number"
                           min={0}
                           value={row.actual}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            // Lấy giá trị nhập vào, nếu người dùng xóa trắng thì gán bằng 0
+                            let val = parseInt(e.target.value);
+                            if (isNaN(val)) val = 0;
+
+                            // Dùng Math.max để ÉP BUỘC không cho phép số âm
                             handleWarehouseChange(
                               row.id,
                               "actual",
-                              Number(e.target.value),
-                            )
-                          }
+                              Math.max(0, val),
+                            );
+                          }}
                           className="w-full text-center rounded-md border border-gray-300 px-2 py-1 text-sm font-bold text-blue-600 focus:ring-2 focus:ring-blue-500 outline-none"
                         />
                       </td>
