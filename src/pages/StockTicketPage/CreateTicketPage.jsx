@@ -171,7 +171,7 @@ const CreateTicketPage = () => {
       quantity: Number(item.quantity),
       price: Number(item.price),
     }));
-
+    console.log(details);
     // 1. Tạo Payload gốc (Khớp 100% với DTO ở NestJS)
     const payload = {
       type: ticketType,

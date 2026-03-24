@@ -30,3 +30,13 @@ export const cancelStockTicket = async (id, reason) => {
   });
   return response.data;
 };
+
+// Xác nhận nhận hàng luân chuyển (Kho đích bấm)
+// BẮT BUỘC PHẢI THÊM locationId VÀO TRONG NGOẶC (...)
+export const receiveTransfer = async (id, actualDetails = [], locationId) => {
+  const response = await api.patch(`/stock-tickets/${id}/receive`, {
+    actualDetails,
+    locationId, // <--- ĐẨY locationId XUỐNG CHO BACKEND NHẬN DIỆN
+  });
+  return response.data;
+};
