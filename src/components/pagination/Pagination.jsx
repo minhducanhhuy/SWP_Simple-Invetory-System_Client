@@ -4,7 +4,7 @@ import {
   ChevronRightIcon,
   MoreHorizontal,
 } from "lucide-react";
-import { cn } from "../../utils/cn"; // Import hàm gộp class ở Bước 1
+import { cn } from "../../lib/utils"; // Import hàm gộp class ở Bước 1
 
 const Pagination = ({ className, ...props }) => (
   <nav
