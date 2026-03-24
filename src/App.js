@@ -16,6 +16,7 @@ import SupplierPage from "./pages/SupplierPage/SupplierPage";
 import ProductPage from "./pages/ProductPage/ProductPage";
 import MasterDataPage from "./pages/MasterDataPage/MasterDataPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import StockTakePage from "./pages/StockTakePage/StockTakePage";
 import ProductPageWithPriceFilter from "./pages/ProductPage/ProductPageWithPriceFilter";
 import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
 import ResetPasswordPage from "./pages/LoginPage/ResetPasswordPage";
@@ -67,6 +68,7 @@ function App() {
               <Route path="/employees" element={<EmployeePage />} />
               <Route path="/locations" element={<LocationPage />} />
               <Route path="/suppliers" element={<SupplierPage />} />
+              <Route path="/stock-take" element={<StockTakePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
             </Route>

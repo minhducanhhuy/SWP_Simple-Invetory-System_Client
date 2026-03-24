@@ -46,6 +46,10 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
         label: "KIỂM KÊ / ĐIỀU CHỈNH",
         color: "bg-purple-100 text-purple-700",
       },
+      STOCKTAKE: {
+        label: "PHIẾU KIỂM KÊ",
+        color: "bg-indigo-100 text-indigo-700",
+      },
       RETURN_TO_SUPP: {
         label: "TRẢ HÀNG NCC",
         color: "bg-yellow-100 text-yellow-800",
@@ -64,8 +68,8 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
         >
           {conf.label}
         </span>
-        {/* Hiển thị lý do nếu có (cho Adjustment) */}
-        {type === "ADJUSTMENT" && reason && (
+        {/* Hiển thị lý do nếu có */}
+        {type !== "STOCKTAKE" && reason && (
           <span className="text-[11px] text-gray-500 mt-1 italic border border-gray-200 px-1 rounded bg-gray-50">
             Lý do: {reason}
           </span>
@@ -76,7 +80,7 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* HEADER */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-3">
@@ -125,11 +129,15 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                       {new Date(ticket.createdAt).toLocaleString("vi-VN")}
                     </span>
                   </div>
+                  {/* HIỂN THỊ NGƯỜI TẠO TẠI ĐÂY */}
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500 flex items-center gap-1">
                       <FaUser /> Người tạo:
                     </span>
-                    <span className="font-medium text-blue-600">
+                    <span className="font-medium text-blue-600 flex items-center gap-2">
+                      <div className="w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-[10px] font-bold">
+                        {ticket.creator?.fullName?.charAt(0) || "U"}
+                      </div>
                       {ticket.creator?.fullName}
                     </span>
                   </div>
@@ -199,7 +207,7 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                 </div>
               </div>
 
-              {/* 2. DANH SÁCH SẢN PHẨM (Table) */}
+              {/* 2. DANH SÁCH SẢN PHẨM (BẢNG THÔNG MINH ĐỔI GIAO DIỆN THEO LOẠI PHIẾU) */}
               <div>
                 <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <FaFileInvoice className="text-gray-400" />
@@ -208,63 +216,119 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-sm text-left">
                     <thead className="bg-gray-50 text-gray-500 font-semibold uppercase text-xs">
-                      <tr>
-                        <th className="px-4 py-3">#</th>
-                        <th className="px-4 py-3">Mã hàng</th>
-                        <th className="px-4 py-3">Tên sản phẩm</th>
-                        <th className="px-4 py-3 text-center">ĐVT</th>
-                        <th className="px-4 py-3 text-right">Số lượng</th>
-                        <th className="px-4 py-3 text-right">Đơn giá</th>
-                        <th className="px-4 py-3 text-right">Thành tiền</th>
-                      </tr>
+                      {ticket.type === "STOCKTAKE" ? (
+                        // HEADER RIÊNG CHO PHIẾU KIỂM KÊ
+                        <tr>
+                          <th className="px-4 py-3">#</th>
+                          <th className="px-4 py-3">Mã SP</th>
+                          <th className="px-4 py-3">Tên sản phẩm</th>
+                          <th className="px-4 py-3 text-center">SL Hệ thống</th>
+                          <th className="px-4 py-3 text-center">SL Thực đếm</th>
+                          <th className="px-4 py-3 text-center">Chênh lệch</th>
+                          <th className="px-4 py-3">Lý do chênh lệch</th>
+                        </tr>
+                      ) : (
+                        // HEADER CHO PHIẾU NHẬP/XUẤT BÌNH THƯỜNG
+                        <tr>
+                          <th className="px-4 py-3">#</th>
+                          <th className="px-4 py-3">Mã SP</th>
+                          <th className="px-4 py-3">Tên sản phẩm</th>
+                          <th className="px-4 py-3 text-center">ĐVT</th>
+                          <th className="px-4 py-3 text-right">Số lượng</th>
+                          <th className="px-4 py-3 text-right">Đơn giá</th>
+                          <th className="px-4 py-3 text-right">Thành tiền</th>
+                        </tr>
+                      )}
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      {ticket.details.map((item, idx) => (
-                        <tr
-                          key={item.id}
-                          className="hover:bg-gray-50 transition-colors"
-                        >
-                          <td className="px-4 py-3 text-gray-400">{idx + 1}</td>
-                          <td className="px-4 py-3 font-mono text-gray-600">
-                            {item.product.sku}
+                      {ticket.details.map((item, idx) => {
+                        const diff =
+                          (item.actualQty ?? 0) - (item.systemQty ?? 0);
+
+                        return (
+                          <tr
+                            key={item.id}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
+                            <td className="px-4 py-3 text-gray-400">
+                              {idx + 1}
+                            </td>
+                            <td className="px-4 py-3 font-mono text-gray-600">
+                              {item.product.sku}
+                            </td>
+                            <td className="px-4 py-3 font-medium text-gray-900">
+                              {item.product.name}
+                            </td>
+
+                            {ticket.type === "STOCKTAKE" ? (
+                              // RENDER CỘT DỮ LIỆU KIỂM KÊ
+                              <>
+                                <td className="px-4 py-3 text-center font-bold text-gray-500">
+                                  {item.systemQty}
+                                </td>
+                                <td className="px-4 py-3 text-center font-bold text-blue-600">
+                                  {item.actualQty}
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  {diff > 0 ? (
+                                    <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
+                                      +{diff}
+                                    </span>
+                                  ) : diff < 0 ? (
+                                    <span className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">
+                                      {diff}
+                                    </span>
+                                  ) : (
+                                    <span className="text-gray-400">-</span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3 text-gray-600 italic">
+                                  {item.note || "—"}
+                                </td>
+                              </>
+                            ) : (
+                              // RENDER CỘT DỮ LIỆU NHẬP XUẤT
+                              <>
+                                <td className="px-4 py-3 text-center text-gray-500 text-xs bg-gray-50 rounded">
+                                  {item.product.unit?.name}
+                                </td>
+                                <td className="px-4 py-3 text-right font-bold text-blue-600">
+                                  {item.quantity}
+                                </td>
+                                <td className="px-4 py-3 text-right text-gray-600">
+                                  {formatMoney(item.price)}
+                                </td>
+                                <td className="px-4 py-3 text-right font-bold text-gray-800">
+                                  {formatMoney(item.quantity * item.price)}
+                                </td>
+                              </>
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+
+                    {/* FOOTER TỔNG TIỀN (Chỉ hiện nếu không phải kiểm kê) */}
+                    {ticket.type !== "STOCKTAKE" && (
+                      <tfoot className="bg-gray-50 font-bold text-gray-900">
+                        <tr>
+                          <td
+                            colSpan="6"
+                            className="px-4 py-3 text-right uppercase text-xs tracking-wider"
+                          >
+                            Tổng giá trị phiếu:
                           </td>
-                          <td className="px-4 py-3 font-medium text-gray-900">
-                            {item.product.name}
-                          </td>
-                          <td className="px-4 py-3 text-center text-gray-500 text-xs bg-gray-50 rounded">
-                            {item.product.unit?.name}
-                          </td>
-                          <td className="px-4 py-3 text-right font-bold text-blue-600">
-                            {item.quantity}
-                          </td>
-                          <td className="px-4 py-3 text-right text-gray-600">
-                            {formatMoney(item.price)}
-                          </td>
-                          <td className="px-4 py-3 text-right font-bold text-gray-800">
-                            {formatMoney(item.quantity * item.price)}
+                          <td className="px-4 py-3 text-right text-blue-700 text-base">
+                            {formatMoney(
+                              ticket.details.reduce(
+                                (sum, i) => sum + i.quantity * i.price,
+                                0,
+                              ),
+                            )}
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                    {/* Footer Tổng tiền */}
-                    <tfoot className="bg-gray-50 font-bold text-gray-900">
-                      <tr>
-                        <td
-                          colSpan="6"
-                          className="px-4 py-3 text-right uppercase text-xs tracking-wider"
-                        >
-                          Tổng giá trị phiếu:
-                        </td>
-                        <td className="px-4 py-3 text-right text-blue-700 text-base">
-                          {formatMoney(
-                            ticket.details.reduce(
-                              (sum, i) => sum + i.quantity * i.price,
-                              0,
-                            ),
-                          )}
-                        </td>
-                      </tr>
-                    </tfoot>
+                      </tfoot>
+                    )}
                   </table>
                 </div>
               </div>
