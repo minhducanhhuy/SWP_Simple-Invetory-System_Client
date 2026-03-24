@@ -8,6 +8,7 @@ import {
   FaLock,
   FaSave,
   FaSpinner,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 
 const ProfilePage = () => {
@@ -15,6 +16,7 @@ const ProfilePage = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
+    address: "",
     password: "", // Chỉ điền nếu muốn đổi
     confirmPassword: "",
   });
@@ -26,6 +28,7 @@ const ProfilePage = () => {
       setFormData({
         fullName: user.fullName || "",
         phone: user.phone || "",
+        address: user.address || "",
         password: "",
         confirmPassword: "",
       });
@@ -47,6 +50,7 @@ const ProfilePage = () => {
       const payload = {
         fullName: formData.fullName,
         phone: formData.phone,
+        address: formData.address,
       };
       // Chỉ gửi password nếu user nhập vào (muốn đổi)
       if (formData.password) {
@@ -115,6 +119,25 @@ const ProfilePage = () => {
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* --- MỚI: ĐỊA CHỈ (Nằm dưới họ tên/SĐT) --- */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Địa chỉ
+              </label>
+              <div className="relative">
+                <FaMapMarkerAlt className="absolute left-3 top-3 text-gray-400" />
+                <input
+                  type="text"
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
                   }
                 />
               </div>

@@ -9,6 +9,8 @@ import {
   FaEye,
   FaEyeSlash,
   FaCheckCircle,
+  FaAddressBook,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { acceptInvite } from "../../services/authService";
 import { validatePassword, validateUsername } from "../../utils/validators";
@@ -24,6 +26,7 @@ const AcceptInvitePage = () => {
     phone: "",
     username: "",
     password: "",
+    address: "",
     confirmPassword: "",
   });
 
@@ -76,6 +79,7 @@ const AcceptInvitePage = () => {
         username: formData.username,
         password: formData.password,
         fullName: formData.fullName,
+        address: formData.address,
         phone: formData.phone,
       });
 
@@ -183,6 +187,27 @@ const AcceptInvitePage = () => {
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
                   placeholder="Nhập số điện thoại"
                   value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* --- MỚI: ĐỊA CHỈ --- */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Địa chỉ <span className="text-red-500">*</span>
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500">
+                  <FaMapMarkerAlt />
+                </div>
+                <input
+                  required
+                  name="address"
+                  type="text"
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                  placeholder="Nhập địa chỉ của bạn"
+                  value={formData.address}
                   onChange={handleChange}
                 />
               </div>

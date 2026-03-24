@@ -28,8 +28,13 @@ export const AuthProvider = ({ children }) => {
     checkLogin();
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
+  const login = async () => {
+    try {
+      const userData = await getProfile();
+      setUser(userData);
+    } catch (error) {
+      console.error("Lỗi lấy thông tin profile sau khi đăng nhập", error);
+    }
   };
 
   const logout = () => {
