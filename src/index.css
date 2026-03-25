@@ -132,3 +132,20 @@ table {
 #root {
   height: 100%;
 }
+
+/* HIỆU ỨNG ẨN GIAO DIỆN KHI IN HÓA ĐƠN */
+@media print {
+  body * {
+    visibility: hidden; /* Ẩn toàn bộ mọi thứ trên web */
+  }
+  #receipt-print-area,
+  #receipt-print-area * {
+    visibility: visible; /* Chỉ hiện thị vùng có ID này */
+  }
+  #receipt-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

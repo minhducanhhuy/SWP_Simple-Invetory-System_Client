@@ -203,7 +203,11 @@ const SupplierPage = () => {
   const fetchSuppliers = async () => {
     setLoading(true);
     try {
-      const data = await getSuppliers();
+      // Lấy ID kho hiện tại đang được chọn trên Header
+      const currentLocationId = localStorage.getItem('currentLocationId') || ''; 
+      
+      // Truyền ID này vào hàm getSuppliers
+      const data = await getSuppliers(currentLocationId);
       setSuppliers(data);
     } catch (err) {
       console.error(err);
