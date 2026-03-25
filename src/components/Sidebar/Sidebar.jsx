@@ -98,7 +98,7 @@ const Sidebar = () => {
           path: "/customers",
           label: "Khách hàng",
           icon: <FaUsers className="h-5 w-5" />,
-          allowedRoles: ["SALESPERSON"], // ADMIN_SYSTEM không thấy
+          allowedRoles: ["OWNER", "SALESPERSON"], // ADMIN_SYSTEM không thấy
         },
       ],
     },
@@ -109,13 +109,13 @@ const Sidebar = () => {
           path: "/employees",
           label: "Nhân viên",
           icon: <FaUsers className="h-5 w-5" />,
-          allowedRoles: ["ADMIN_SYSTEM"], // Chỉ hiện cho role này
+          allowedRoles: ["OWNER", "ADMIN_SYSTEM"], // Chỉ hiện cho role này
         },
         {
           path: "/master-data",
           label: "Cấu hình chung", // Có thể trỏ về Dashboard hoặc trang riêng
           icon: <FaSliders className="h-5 w-5" />,
-          allowedRoles: ["ADMIN_SYSTEM"],
+          allowedRoles: ["OWNER", "ADMIN_SYSTEM"],
         },
         {
           path: "/locations",
