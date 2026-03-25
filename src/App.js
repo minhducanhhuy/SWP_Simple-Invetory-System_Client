@@ -25,6 +25,8 @@ import AcceptInvitePage from "./pages/LoginPage/AcceptInvitePage";
 import POSPage from "./pages/POSPage/POSpage";
 import CashbookPage from "./pages/CashBook/CashBookPage";
 import NotificationPage from "./NotificationPage/NotificationPage";
+import InvoiceListPage from "./pages/InvoicePage/InvoicePage";
+import DashboardPage from "./pages/DashBoard/DashBoardPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -49,6 +51,8 @@ function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/pos" element={<POSPage />} />
             <Route path="/cashbook" element={<CashbookPage />} />
+            <Route path="/invoices" element={<InvoiceListPage />} />
+
             <Route
               path="/"
               element={
@@ -57,6 +61,8 @@ function App() {
                 </ProtectedRoute>
               }
             >
+              {/* THAY VÌ ĐỂ TRỐNG, CHÚNG TA ĐẶT INDEX ROUTE LÀ DASHBOARD */}
+              <Route index element={<DashboardPage />} />
               <Route
                 path="/products"
                 element={<ProductPageWithPriceFilter />}

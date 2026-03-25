@@ -16,6 +16,7 @@ import {
   FaArrowRightFromBracket,
   FaStore,
   FaUserPlus,
+  FaFileInvoiceDollar,
 } from "react-icons/fa6";
 
 const POSPage = () => {
@@ -235,6 +236,16 @@ const POSPage = () => {
               {user?.fullName || "Thu ngân"}
             </span>
           </div>
+
+          {/* === THÊM NÚT NÀY CHO THU NGÂN XEM ĐỐI SOÁT === */}
+          <button
+            onClick={() => navigate("/invoices")}
+            className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition flex items-center gap-1.5 font-bold shadow-sm"
+          >
+            <FaFileInvoiceDollar /> Lịch sử & Giao ca
+          </button>
+          {/* ============================================= */}
+
           {user?.role !== "SALESPERSON" && (
             <button
               onClick={() => navigate("/")}
