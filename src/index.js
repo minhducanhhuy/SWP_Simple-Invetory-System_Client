@@ -4,11 +4,22 @@ import "./index.css";
 import App from "./App";
 import "./assets/styles/global.css";
 import reportWebVitals from "./reportWebVitals";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // Tùy chọn: Không tự động gọi lại API khi chuyển tab trình duyệt
+      retry: 1, // Tùy chọn: Chỉ thử gọi lại 1 lần nếu API lỗi
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>,
 );
 
