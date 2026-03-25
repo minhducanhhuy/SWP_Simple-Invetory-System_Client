@@ -11,6 +11,7 @@ import {
 import { AuthContext } from "../../context/AuthContext";
 import { logoutUser } from "../../services/authService";
 import { useLocation } from "../../context/LocationContext";
+import NotificationBell from "../NotificationBell/NotificationBell";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -107,10 +108,7 @@ const Header = () => {
       {/* --- RIGHT: USER & NOTIFICATION --- */}
       <div className="flex items-center gap-2 md:gap-4">
         {/* Notification Icon */}
-        <button className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
-          <FaBell className="text-lg" />
-          <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
-        </button>
+        <NotificationBell />
 
         {/* User Profile Dropdown */}
         <div className="relative" ref={userMenuRef}>
