@@ -43,8 +43,15 @@ const Header = () => {
 
   // Khối: Xử lý đổi kho
   const handleSwitchWarehouse = (warehouse) => {
-    switchLocation(warehouse); // Context tự lo việc lưu vào localStorage
-    setIsWarehouseOpen(false); // Chỉ việc đóng menu UI
+    switchLocation(warehouse); 
+    
+    // Đảm bảo việc ghi vào localStorage và cập nhật Context đã hoàn tất
+    setTimeout(() => {
+      window.dispatchEvent(new Event("locationChanged"));
+      console.log("Đã phát sự kiện đổi kho sang:", warehouse.name);
+    }, 0);
+
+    setIsWarehouseOpen(false);
   };
 
   return (
