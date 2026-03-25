@@ -22,6 +22,8 @@ import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
 import ResetPasswordPage from "./pages/LoginPage/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/LoginPage/ForgotPasswordPage";
 import AcceptInvitePage from "./pages/LoginPage/AcceptInvitePage";
+import POSPage from "./pages/POSPage/POSpage";
+import CashbookPage from "./pages/CashBook/CashBookPage";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -44,7 +46,8 @@ function App() {
 
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-
+            <Route path="/pos" element={<POSPage />} />
+            <Route path="/cashbook" element={<CashbookPage />} />
             <Route
               path="/"
               element={

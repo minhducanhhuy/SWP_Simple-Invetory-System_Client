@@ -14,6 +14,8 @@ import {
   FaUsers,
   FaSignOutAlt,
   FaWarehouse,
+  FaCashRegister,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import { FaSliders } from "react-icons/fa6";
 import { IoIosCreate } from "react-icons/io";
@@ -51,6 +53,24 @@ const Sidebar = () => {
   // Cấu hình danh sách menu và quyền truy cập
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
+    // === ĐÃ THÊM NHÓM BÁN HÀNG & DOANH THU VÀO ĐÂY ===
+    {
+      label: "Bán hàng & Doanh thu",
+      items: [
+        {
+          path: "/pos",
+          label: "Bán hàng (POS)",
+          icon: <FaCashRegister className="h-5 w-5" />,
+          allowedRoles: ["SALESPERSON"], // Nhân viên kho không thấy
+        },
+        {
+          path: "/cashbook",
+          label: "Sổ quỹ (Thu/Chi)",
+          icon: <FaMoneyBillWave className="h-5 w-5" />,
+          allowedRoles: ["MANAGER", "OWNER"], // Chỉ Quản lý và Sếp được xem dòng tiền
+        },
+      ],
+    },
     {
       label: "Đối tác & Vận hành",
       items: [
