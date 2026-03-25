@@ -30,7 +30,8 @@ const ProductTable = ({
               <th className="px-6 py-4 font-medium">Sản phẩm</th>
               <th className="px-6 py-4 font-medium">Danh Mục</th>
               <th className="px-6 py-4 font-medium">Mô tả</th>
-              
+              <th className="px-6 py-4 font-medium text-gray-900">Nhà cung cấp</th>
+
               {/* [LOGIC] Ẩn cột Giá Vốn */}
               {!isSalesperson && (
                 <th className="px-6 py-4 font-medium text-right">Giá Vốn</th>
@@ -51,7 +52,7 @@ const ProductTable = ({
                 key={p.id}
                 className="group transition-colors hover:bg-blue-50/30"
               >
-                
+
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
@@ -80,7 +81,7 @@ const ProductTable = ({
                   </div>
                 </td>
 
-                
+
                 {/* Cột 2: Danh mục (Giữ nguyên) */}
                 <td className="px-6 py-4">
                   <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
@@ -89,11 +90,21 @@ const ProductTable = ({
                 </td>
 
                 {/* Cột 3: Mô tả */}
-<td className="px-6 py-4 max-w-[250px]">
-  <span className="text-gray-600 text-sm line-clamp-2">
-    {p.description || "Không có"}
-  </span>
-</td>
+                <td className="px-6 py-4 max-w-[250px]">
+                  <span className="text-gray-600 text-sm line-clamp-2">
+                    {p.description || "Không có"}
+                  </span>
+                </td>
+
+                <td className="px-6 py-4">
+                  <div className="flex flex-wrap gap-1">
+                    {p.suppliers?.map((item) => (
+                      <span key={item.supplier.id} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs border border-blue-100">
+                        {item.supplier.name}
+                      </span>
+                    )) || "---"}
+                  </div>
+                </td>
 
                 {/* [LOGIC] Cột Giá Vốn: Ẩn nếu là Sale */}
                 {!isSalesperson && (
@@ -106,6 +117,8 @@ const ProductTable = ({
                 <td className="px-6 py-4 text-right font-semibold text-blue-600">
                   {formatCurrency(p.sellPrice)}
                 </td>
+
+
 
                 {/* Cột 4: Tồn kho (Giữ nguyên) */}
                 <td className="px-6 py-4 text-center">

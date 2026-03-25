@@ -14,8 +14,27 @@ const ProductModal = ({
   isEditing,
   categories,
   units,
+  suppliers,
 }) => {
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState({
+    ...initialData,
+    supplierIds: initialData?.supplierIds || []
+  });
+  const handleSupplierChange = (supplierId) => {
+    setFormData(prev => {
+      // Bảo vệ: Nếu vì lý do gì đó supplierIds vẫn là undefined thì gán mảng rỗng
+      const currentIds = prev.supplierIds || [];
+
+      const isExist = currentIds.includes(supplierId);
+
+      return {
+        ...prev,
+        supplierIds: isExist
+          ? currentIds.filter(id => id !== supplierId) // Bỏ chọn: lọc ID ra
+          : [...currentIds, supplierId]               // Chọn thêm: push ID vào
+      };
+    });
+  };
   const [errors, setErrors] = useState({});
 
   // Reset form khi initialData thay đổi (khi mở modal)
@@ -29,7 +48,7 @@ const ProductModal = ({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     const newValue =
-    name === "sku" ? value.trimStart() : value;
+      name === "sku" ? value.trimStart() : value;
     setFormData({ ...formData, [name]: newValue });
     if (errors[name]) setErrors({ ...errors, [name]: "" });
   };
@@ -52,10 +71,9 @@ const ProductModal = ({
 
   // Styles reused
   const inputStyle = (hasError) =>
-    `w-full rounded-lg border ${
-      hasError
-        ? "border-red-500 text-red-900 focus:ring-red-100"
-        : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
+    `w-full rounded-lg border ${hasError
+      ? "border-red-500 text-red-900 focus:ring-red-100"
+      : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
     } bg-white px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 disabled:bg-gray-100 disabled:text-gray-500`;
 
   return (
@@ -204,17 +222,72 @@ const ProductModal = ({
             </div>
             {/*Description*/}
             <div>
-  <label>Mô tả sản phẩm</label>
-  <textarea
-    value={formData.description}
-    onChange={(e) =>
-      setFormData({ ...formData, description: e.target.value })
-    }
-    rows={4}
-    className="w-full border rounded p-2"
-    placeholder="Nhập mô tả sản phẩm..."
-  />
-</div>
+              <label>Mô tả sản phẩm</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={4}
+                className="w-full border rounded p-2"
+                placeholder="Nhập mô tả sản phẩm..."
+              />
+            </div>
+
+            {/* Cột hiển thị Nhà cung cấp */}
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Nhà cung cấp (Có thể chọn nhiều)
+              </label>
+              
+              {/* Khu vực 1: Hiển thị các Tags đã chọn */}
+              <div className="flex flex-wrap gap-2 mb-3 min-h-[32px] items-center p-2 bg-white border border-gray-200 rounded-lg">
+                {formData.supplierIds?.map((id) => {
+                  const supplier = suppliers?.find((s) => s.id === id);
+                  if (!supplier) return null;
+                  
+                  return (
+                    <span 
+                      key={id} 
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200 shadow-sm"
+                    >
+                      {supplier.name}
+                      <button
+                        type="button"
+                        onClick={() => handleSupplierChange(id)}
+                        className="hover:text-red-600 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                        title="Bỏ chọn"
+                      >
+                        <FaTimes size={12} />
+                      </button>
+                    </span>
+                  );
+                })}
+                {(!formData.supplierIds || formData.supplierIds.length === 0) && (
+                  <span className="text-sm text-gray-400 italic px-2">
+                    Chưa chọn nhà cung cấp nào...
+                  </span>
+                )}
+              </div>
+
+              {/* Khu vực 2: Danh sách Checkbox */}
+              <div className="grid grid-cols-2 gap-2 p-3 border border-gray-200 rounded-lg bg-gray-50 max-h-48 overflow-y-auto shadow-inner">
+                {suppliers?.map((s) => (
+                  <label key={s.id} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded-md transition-all border border-transparent hover:border-gray-200 hover:shadow-sm">
+                    <input
+                      type="checkbox"
+                      checked={formData.supplierIds?.includes(s.id) || false}
+                      onChange={() => handleSupplierChange(s.id)}
+                      className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 transition-colors"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-700">{s.name}</span>
+                      <span className="text-xs text-gray-500">{s.code}</span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
 
             {/* Image URL */}
             <div className="md:col-span-2">
