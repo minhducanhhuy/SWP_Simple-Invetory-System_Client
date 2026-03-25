@@ -32,7 +32,11 @@ const ProductPage = () => {
   const [historyProductId, setHistoryProductId] = useState(null); // State lưu ID sp đang xem lịch sử
   const [isHistoryOpen, setIsHistoryOpen] = useState(false); // State mở modal
 
-  const [metadata, setMetadata] = useState({ categories: [], units: [], suppliers: [] });
+  const [metadata, setMetadata] = useState({
+    categories: [],
+    units: [],
+    suppliers: [],
+  });
 
   // 2. State quản lý UI/Filter
   const [loading, setLoading] = useState(true);
@@ -109,7 +113,7 @@ const ProductPage = () => {
     categoryFilter,
     minPrice,
     maxPrice,
-    sortPrice
+    sortPrice,
   ]);
 
   // --- KHỐI 2: HANDLERS (XỬ LÝ SỰ KIỆN) ---
@@ -173,9 +177,9 @@ const ProductPage = () => {
     const formattedData = {
       ...product,
 
-      // Chuyển đổi Quan hệ Nhiều-Nhiều: 
+      // Chuyển đổi Quan hệ Nhiều-Nhiều:
       // Từ [{supplierId: 'A'}, {supplierId: 'B'}] thành ['A', 'B']
-      supplierIds: product.suppliers?.map(item => item.supplierId) || [],
+      supplierIds: product.suppliers?.map((item) => item.supplierId) || [],
 
       // Ép kiểu dữ liệu số để các ô Input không bị lỗi hoặc hiện trống
       costPrice: product.costPrice ? Number(product.costPrice) : 0,

@@ -3,11 +3,16 @@ import api from "./api";
 
 // 1. Lấy danh sách sản phẩm
 export const getProducts = async (params = {}) => {
-  const { search, categoryId, locationId } = params;
+  // [SỬA LẠI]: Destructure thêm minPrice, maxPrice, sortPrice
+  const { search, categoryId, locationId, minPrice, maxPrice, sortPrice } =
+    params;
+
   const config = {
-    params: { search, categoryId },
-    headers: { "x-location-id": locationId }, // Header quan trọng để tính tồn kho
+    // [SỬA LẠI]: Truyền thêm các tham số này vào params của Axios
+    params: { search, categoryId, minPrice, maxPrice, sortPrice },
+    headers: { "x-location-id": locationId },
   };
+
   const response = await api.get("/products", config);
   return response.data;
 };
@@ -39,11 +44,11 @@ export const createProduct = async (data, locationId) => {
   // Nó đã chứa: { name, sku, categoryId, unitId, supplierIds, ... }
 
   const response = await api.post("/products", data, {
-    headers: { 
-      "x-location-id": locationId 
+    headers: {
+      "x-location-id": locationId,
     },
   });
-  
+
   return response.data;
 };
 
