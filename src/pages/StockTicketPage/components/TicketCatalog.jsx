@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  FaMagnifyingGlass,
-  FaBoxOpen,
-  FaArrowLeft,
-  FaTruckArrowRight,
-  FaCartShopping,
-  FaRightLeft,
-} from "react-icons/fa6";
+import { FaMagnifyingGlass, FaBoxOpen } from "react-icons/fa6";
 
 const TicketCatalog = ({
   products,
@@ -14,7 +7,6 @@ const TicketCatalog = ({
   setSearchTerm,
   onAddToCart,
   ticketType,
-  navigate,
 }) => {
   // Helper format tiền
   const formatMoney = (amount) =>

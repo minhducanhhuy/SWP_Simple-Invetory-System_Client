@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProducts } from "../../services/productService";
-import { getMyLocations } from "../../services/locationService";
 import { createStockTicket } from "../../services/stockTicketService";
 import { getSuppliers } from "../../services/supplierService";
 import { getCustomers } from "../../services/customerService";

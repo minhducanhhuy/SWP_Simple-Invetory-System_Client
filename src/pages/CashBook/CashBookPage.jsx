@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "../../context/LocationContext";
+import { useNavigate } from "react-router-dom";
 import {
   getCashTransactions,
   createCashTransaction,
 } from "../../services/cashService";
-import { FaPlus, FaMinus, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaPlus,
+  FaMinus,
+  FaMoneyBillWave,
+  FaCashRegister,
+} from "react-icons/fa";
 
 const CashbookPage = () => {
+  const navigate = useNavigate(); // <--- Thêm dòng này
   const { currentLocation } = useLocation();
   const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,25 +85,39 @@ const CashbookPage = () => {
         <h1 className="text-2xl font-black text-gray-800 flex items-center gap-2">
           <FaMoneyBillWave className="text-green-600" /> SỔ QUỸ CỬA HÀNG
         </h1>
-        <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setFormData({ ...formData, type: "IN", category: "OTHER_IN" });
-              setIsModalOpen(true);
-            }}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 shadow-md"
-          >
-            <FaPlus /> LẬP PHIẾU THU
-          </button>
-          <button
-            onClick={() => {
-              setFormData({ ...formData, type: "OUT", category: "EXPENSE" });
-              setIsModalOpen(true);
-            }}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-red-600 shadow-md"
-          >
-            <FaMinus /> LẬP PHIẾU CHI
-          </button>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-black text-gray-800 flex items-center gap-2">
+            <FaMoneyBillWave className="text-green-600" /> SỔ QUỸ CỬA HÀNG
+          </h1>
+          <div className="flex gap-3 items-center">
+            {/* === THÊM NÚT QUAY LẠI POS VÀO ĐÂY === */}
+            <button
+              onClick={() => navigate("/pos")}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg shadow-md transition-all active:scale-95"
+            >
+              <FaCashRegister /> Quay lại POS
+            </button>
+            {/* ================================== */}
+
+            <button
+              onClick={() => {
+                setFormData({ ...formData, type: "IN", category: "OTHER_IN" });
+                setIsModalOpen(true);
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 shadow-md"
+            >
+              <FaPlus /> LẬP PHIẾU THU
+            </button>
+            <button
+              onClick={() => {
+                setFormData({ ...formData, type: "OUT", category: "EXPENSE" });
+                setIsModalOpen(true);
+              }}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-red-600 shadow-md"
+            >
+              <FaMinus /> LẬP PHIẾU CHI
+            </button>
+          </div>
         </div>
       </div>
 

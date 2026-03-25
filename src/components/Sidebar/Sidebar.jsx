@@ -16,6 +16,7 @@ import {
   FaWarehouse,
   FaCashRegister,
   FaMoneyBillWave,
+  FaFileInvoiceDollar,
 } from "react-icons/fa";
 import { FaSliders } from "react-icons/fa6";
 import { IoIosCreate } from "react-icons/io";
@@ -57,6 +58,12 @@ const Sidebar = () => {
     {
       label: "Bán hàng & Doanh thu",
       items: [
+        {
+          path: "/invoices",
+          label: "Lịch sử hóa đơn",
+          icon: <FaFileInvoiceDollar className="h-5 w-5" />,
+          allowedRoles: ["SALESPERSON", "MANAGER", "OWNER"], // Phân quyền ở đây
+        },
         {
           path: "/pos",
           label: "Bán hàng (POS)",

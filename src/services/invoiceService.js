@@ -13,3 +13,11 @@ export const getInvoicesByLocation = async (locationId) => {
   const response = await api.get(`/invoices?locationId=${locationId}`);
   return response.data;
 };
+
+export const getDashboardSummary = async (locationId) => {
+  if (!locationId) return null;
+  const response = await api.get(
+    `/invoices/dashboard?locationId=${locationId}`,
+  );
+  return response.data;
+};

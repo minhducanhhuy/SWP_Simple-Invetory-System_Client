@@ -53,22 +53,27 @@ const SupplierDetailPage = () => {
     try {
       await createSupplierPayment(paymentData);
       alert("Thanh toán thành công!");
-      
+
       // Đóng modal và reset dữ liệu phiếu đã chọn
       setIsPayModalOpen(false);
       setSelectedTicketToPay(null);
-      
+
       fetchDetail(); // Reload lại để cập nhật công nợ
     } catch (error) {
       // Backend trả về mảng lỗi hoặc chuỗi lỗi
       const errMsg = error.response?.data?.message;
-      alert(Array.isArray(errMsg) ? errMsg[0] : (errMsg || "Lỗi thanh toán"));
+      alert(Array.isArray(errMsg) ? errMsg[0] : errMsg || "Lỗi thanh toán");
     }
   };
 
   // --- 3. XỬ LÝ SỰ KIỆN XÓA (HỦY) PHIẾU CHI ---
   const handleDeleteTransaction = async (item) => {
-    if (!window.confirm(`Bạn chắc chắn muốn hủy phiếu chi ${item.code}? \nSố nợ sẽ được tính lại.`)) return;
+    if (
+      !window.confirm(
+        `Bạn chắc chắn muốn hủy phiếu chi ${item.code}? \nSố nợ sẽ được tính lại.`,
+      )
+    )
+      return;
 
     try {
       if (item.type === "PAYMENT") {
@@ -76,10 +81,15 @@ const SupplierDetailPage = () => {
         alert("Đã hủy phiếu chi thành công! Công nợ đã được tính lại.");
         fetchDetail(); // Reload lại
       } else {
-        alert("Không thể xóa phiếu nhập/trả hàng tại đây. Vui lòng vào Quản lý Nhập kho.");
+        alert(
+          "Không thể xóa phiếu nhập/trả hàng tại đây. Vui lòng vào Quản lý Nhập kho.",
+        );
       }
     } catch (error) {
-      alert("Lỗi khi hủy phiếu: " + (error.response?.data?.message || error.message));
+      alert(
+        "Lỗi khi hủy phiếu: " +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -92,7 +102,7 @@ const SupplierDetailPage = () => {
       // Tính tổng tiền phiếu từ details
       const total = t.details.reduce(
         (sum, d) => sum + Number(d.quantity) * Number(d.price),
-        0
+        0,
       );
       return {
         id: t.id,
@@ -119,7 +129,7 @@ const SupplierDetailPage = () => {
 
     // Gộp 2 mảng và sắp xếp theo ngày (mới nhất lên đầu)
     return [...tickets, ...payments].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
+      (a, b) => new Date(b.date) - new Date(a.date),
     );
   }, [supplier]);
 
@@ -147,8 +157,18 @@ const SupplierDetailPage = () => {
     return <span className="text-3xl font-bold text-gray-600">0 ₫</span>;
   };
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Đang tải chi tiết nhà cung cấp...</div>;
-  if (!supplier) return <div className="p-10 text-center text-red-500">Không tìm thấy dữ liệu nhà cung cấp.</div>;
+  if (loading)
+    return (
+      <div className="p-10 text-center text-gray-500">
+        Đang tải chi tiết nhà cung cấp...
+      </div>
+    );
+  if (!supplier)
+    return (
+      <div className="p-10 text-center text-red-500">
+        Không tìm thấy dữ liệu nhà cung cấp.
+      </div>
+    );
 
   return (
     // !!! ĐẢM BẢO CHỈ CÓ 1 DIV BỌC NGOÀI CÙNG ĐỂ TRÁNH LỖI LẶP UI !!!
@@ -160,7 +180,7 @@ const SupplierDetailPage = () => {
           className="p-2 bg-white border border-gray-200 rounded-full hover:bg-gray-100 transition-colors"
           title="Quay lại"
         >
-          <FaArrowLeft className="text-gray-600"/>
+          <FaArrowLeft className="text-gray-600" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-gray-800">{supplier.name}</h1>
@@ -201,13 +221,17 @@ const SupplierDetailPage = () => {
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Số điện thoại:</span>
                 <span className="font-medium text-blue-700 flex items-center gap-1.5">
-                  <FaPhone className="text-xs"/> {supplier.phone || "---"}
+                  <FaPhone className="text-xs" /> {supplier.phone || "---"}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500">Địa chỉ:</span>
-                <span className="truncate max-w-[200px] text-gray-700 flex items-center gap-1.5" title={supplier.address}>
-                  <FaMapMarkerAlt className="text-xs text-red-500"/> {supplier.address || "---"}
+                <span
+                  className="truncate max-w-[200px] text-gray-700 flex items-center gap-1.5"
+                  title={supplier.address}
+                >
+                  <FaMapMarkerAlt className="text-xs text-red-500" />{" "}
+                  {supplier.address || "---"}
                 </span>
               </div>
             </div>
@@ -233,13 +257,19 @@ const SupplierDetailPage = () => {
               <tbody className="divide-y divide-gray-100">
                 {history.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-10 text-center text-gray-400">
+                    <td
+                      colSpan="5"
+                      className="px-6 py-10 text-center text-gray-400"
+                    >
                       Chưa có lịch sử giao dịch nào.
                     </td>
                   </tr>
                 ) : (
                   history.map((item) => (
-                    <tr key={item.id + item.type} className="hover:bg-gray-50 group transition-colors">
+                    <tr
+                      key={item.id + item.type}
+                      className="hover:bg-gray-50 group transition-colors"
+                    >
                       <td className="px-6 py-3 text-gray-600">
                         {new Date(item.date).toLocaleDateString("vi-VN")}
                       </td>
@@ -249,7 +279,7 @@ const SupplierDetailPage = () => {
                           <button
                             onClick={() => {
                               setSelectedTicketToPay(item); // Lưu phiếu vào state
-                              setIsPayModalOpen(true);      // Mở modal
+                              setIsPayModalOpen(true); // Mở modal
                             }}
                             className="hover:underline text-blue-600 hover:text-blue-800 transition-all text-left font-bold"
                             title="Click để lập phiếu chi thanh toán cho phiếu nhập này"
@@ -258,7 +288,9 @@ const SupplierDetailPage = () => {
                           </button>
                         ) : (
                           // CÁC LOẠI PHIẾU KHÁC (PAYMENT, RETURN)
-                          <span className="text-gray-800 font-medium">{item.code}</span>
+                          <span className="text-gray-800 font-medium">
+                            {item.code}
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-3">
@@ -303,7 +335,7 @@ const SupplierDetailPage = () => {
                             className="text-gray-300 hover:text-red-600 p-2 rounded-full hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                             title="Hủy phiếu chi (Dùng để sửa sai)"
                           >
-                            <FaTrash className="text-xs"/>
+                            <FaTrash className="text-xs" />
                           </button>
                         )}
                       </td>
