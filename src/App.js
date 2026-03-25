@@ -22,7 +22,7 @@ import SupplierDetailPage from "./pages/SupplierDetailPage/SupplierDetailPage";
 import ResetPasswordPage from "./pages/LoginPage/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/LoginPage/ForgotPasswordPage";
 import AcceptInvitePage from "./pages/LoginPage/AcceptInvitePage";
-
+import NotificationPage from "./NotificationPage/NotificationPage";
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
 
@@ -71,6 +71,7 @@ function App() {
               <Route path="/stock-take" element={<StockTakePage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
+              <Route path="/notifications" element={<NotificationPage />} />
             </Route>
           </Routes>
         </LocationProvider>
