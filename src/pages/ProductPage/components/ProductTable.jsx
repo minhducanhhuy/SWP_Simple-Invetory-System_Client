@@ -1,3 +1,4 @@
+// src/pages/ProductPage/components/ProductTable.jsx
 import React from "react";
 import {
   FaBoxOpen,
@@ -25,11 +26,16 @@ const ProductTable = ({
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-gray-600">
+          {/* ... (Phần thead giữ nguyên) ... */}
           <thead className="bg-gray-50/50 text-xs uppercase font-semibold text-gray-500 tracking-wider border-b border-gray-200">
             <tr>
               <th className="px-6 py-4 font-medium">Sản phẩm</th>
               <th className="px-6 py-4 font-medium">Danh Mục</th>
-              {/* [LOGIC] Ẩn cột Giá Vốn */}
+              <th className="px-6 py-4 font-medium">Mô tả</th>
+              <th className="px-6 py-4 font-medium text-gray-900">
+                Nhà cung cấp
+              </th>
+
               {!isSalesperson && (
                 <th className="px-6 py-4 font-medium text-right">Giá Vốn</th>
               )}
@@ -37,7 +43,6 @@ const ProductTable = ({
               <th className="px-6 py-4 font-medium text-right">Giá Bán</th>
               <th className="px-6 py-4 font-medium text-center">Tồn Kho</th>
 
-              {/* [LOGIC] Ẩn cột Thao Tác */}
               {!isSalesperson && (
                 <th className="px-6 py-4 font-medium text-center">Thao Tác</th>
               )}
@@ -71,31 +76,53 @@ const ProductTable = ({
                           <FaBoxOpen className="h-3 w-3" /> {p.sku}
                         </span>
                         <span>•</span>
-                        <span>{p.unit.name}</span>
+                        {/* 1. SỬA CHỖ NÀY: Thêm dấu ? vào p.unit?.name để an toàn */}
+                        <span>{p.unit?.name}</span>
                       </div>
                     </div>
                   </div>
                 </td>
-                {/* Cột 2: Danh mục (Giữ nguyên) */}
+
                 <td className="px-6 py-4">
                   <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
                     {p.category?.name}
                   </span>
                 </td>
 
-                {/* [LOGIC] Cột Giá Vốn: Ẩn nếu là Sale */}
+                <td className="px-6 py-4 max-w-[250px]">
+                  <span className="text-gray-600 text-sm line-clamp-2">
+                    {p.description || "Không có"}
+                  </span>
+                </td>
+
+                <td className="px-6 py-4">
+                  <div className="flex flex-wrap gap-1">
+                    {/* 2. SỬA CHỖ NÀY: Đổi sang dùng displaySuppliers và lấy trực tiếp item.name */}
+                    {p.displaySuppliers && p.displaySuppliers.length > 0 ? (
+                      p.displaySuppliers.map((supplier) => (
+                        <span
+                          key={supplier.id}
+                          className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs border border-blue-100"
+                        >
+                          {supplier.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-gray-400 italic">---</span>
+                    )}
+                  </div>
+                </td>
+
                 {!isSalesperson && (
                   <td className="px-6 py-4 text-right font-medium text-gray-600">
                     {formatCurrency(p.costPrice)}
                   </td>
                 )}
 
-                {/* Cột 3: Giá Bán (Giữ nguyên) */}
                 <td className="px-6 py-4 text-right font-semibold text-blue-600">
                   {formatCurrency(p.sellPrice)}
                 </td>
 
-                {/* Cột 4: Tồn kho (Giữ nguyên) */}
                 <td className="px-6 py-4 text-center">
                   <div className="flex flex-col items-center">
                     <span
@@ -111,7 +138,6 @@ const ProductTable = ({
                   </div>
                 </td>
 
-                {/* [LOGIC] Cột Thao tác: Ẩn nếu là Sale */}
                 {!isSalesperson && (
                   <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">

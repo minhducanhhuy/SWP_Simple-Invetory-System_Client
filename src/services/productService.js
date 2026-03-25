@@ -3,11 +3,16 @@ import api from "./api";
 
 // 1. Lấy danh sách sản phẩm
 export const getProducts = async (params = {}) => {
-  const { search, categoryId, locationId } = params;
+  // [SỬA LẠI]: Destructure thêm minPrice, maxPrice, sortPrice
+  const { search, categoryId, locationId, minPrice, maxPrice, sortPrice } =
+    params;
+
   const config = {
-    params: { search, categoryId },
-    headers: { "x-location-id": locationId }, // Header quan trọng để tính tồn kho
+    // [SỬA LẠI]: Truyền thêm các tham số này vào params của Axios
+    params: { search, categoryId, minPrice, maxPrice, sortPrice },
+    headers: { "x-location-id": locationId },
   };
+
   const response = await api.get("/products", config);
   return response.data;
 };
@@ -16,26 +21,34 @@ export const getProducts = async (params = {}) => {
 // Gọi song song 2 API từ MasterDataModule
 export const getProductMetadata = async () => {
   try {
-    const [categoriesRes, unitsRes] = await Promise.all([
+    const [categoriesRes, unitsRes, suppliersRes] = await Promise.all([
       api.get("/master-data/categories"),
       api.get("/master-data/units"),
+      api.get("/suppliers"),
     ]);
 
     return {
       categories: categoriesRes.data,
       units: unitsRes.data,
+      suppliers: suppliersRes.data,
     };
   } catch (error) {
     console.error("Lỗi lấy metadata:", error);
-    return { categories: [], units: [] };
+    return { categories: [], units: [], suppliers: [] };
   }
 };
 
 // 3. Các hàm CRUD Sản phẩm (Giữ nguyên logic gửi header)
 export const createProduct = async (data, locationId) => {
+  // Giải thích: 'data' ở đây chính là object formData từ Modal gửi lên
+  // Nó đã chứa: { name, sku, categoryId, unitId, supplierIds, ... }
+
   const response = await api.post("/products", data, {
-    headers: { "x-location-id": locationId },
+    headers: {
+      "x-location-id": locationId,
+    },
   });
+
   return response.data;
 };
 
