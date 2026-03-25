@@ -32,8 +32,12 @@ const SupplierDetailPage = () => {
   const fetchDetail = async () => {
     setLoading(true);
     try {
-      // API Backend phải include product name trong details của tickets
-      const response = await api.get(`/suppliers/${id}`);
+      // Lấy ID kho
+      const currentLocationId = localStorage.getItem('currentLocationId') || '';
+      const query = currentLocationId ? `?locationId=${currentLocationId}` : '';
+
+      // Gọi API có đính kèm Query lọc theo kho
+      const response = await api.get(`/suppliers/${id}${query}`);
       setSupplier(response.data);
     } catch (error) {
       console.error("Lỗi tải chi tiết:", error);
@@ -51,16 +55,27 @@ const SupplierDetailPage = () => {
   // --- 2. XỬ LÝ SỰ KIỆN THANH TOÁN ---
   const handleCreatePayment = async (paymentData) => {
     try {
-      await createSupplierPayment(paymentData);
+      const currentLocationId = localStorage.getItem('currentLocationId');
+      if (!currentLocationId) {
+        return alert("Vui lòng chọn Kho làm việc trên thanh Header trước khi tạo phiếu chi!");
+      }
+
+      // Gộp thêm locationId vào dữ liệu từ Modal gửi lên
+      const payload = {
+        ...paymentData,
+        locationId: currentLocationId 
+      };
+
+      // Gửi payload mới này cho Backend
+      await createSupplierPayment(payload);
       alert("Thanh toán thành công!");
 
       // Đóng modal và reset dữ liệu phiếu đã chọn
       setIsPayModalOpen(false);
       setSelectedTicketToPay(null);
-
       fetchDetail(); // Reload lại để cập nhật công nợ
+      
     } catch (error) {
-      // Backend trả về mảng lỗi hoặc chuỗi lỗi
       const errMsg = error.response?.data?.message;
       alert(Array.isArray(errMsg) ? errMsg[0] : errMsg || "Lỗi thanh toán");
     }
