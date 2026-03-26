@@ -20,9 +20,9 @@ import { AuthContext } from "../../context/AuthContext";
 const ProductPage = () => {
   const [params] = useSearchParams();
 
-const minPrice = params.get("minPrice");
-const maxPrice = params.get("maxPrice");
-const sortPrice = params.get("sortPrice");
+  const minPrice = params.get("minPrice");
+  const maxPrice = params.get("maxPrice");
+  const sortPrice = params.get("sortPrice");
   const { user } = useContext(AuthContext); // Lấy thông tin user
   const isSalesperson = user?.role === "SALESPERSON"; // Biến kiểm tra quyền
 
@@ -32,7 +32,11 @@ const sortPrice = params.get("sortPrice");
   const [historyProductId, setHistoryProductId] = useState(null); // State lưu ID sp đang xem lịch sử
   const [isHistoryOpen, setIsHistoryOpen] = useState(false); // State mở modal
 
-  const [metadata, setMetadata] = useState({ categories: [], units: [] });
+  const [metadata, setMetadata] = useState({
+    categories: [],
+    units: [],
+    suppliers: [],
+  });
 
   // 2. State quản lý UI/Filter
   const [loading, setLoading] = useState(true);
@@ -46,9 +50,11 @@ const sortPrice = params.get("sortPrice");
     name: "",
     categoryId: "",
     unitId: "",
+    supplierId: "",
     costPrice: 0,
     sellPrice: 0,
     imageUrl: "",
+    description: "",
     minStockLevel: 10,
   };
   const [modalData, setModalData] = useState(initialFormState);
@@ -71,33 +77,44 @@ const sortPrice = params.get("sortPrice");
 
   // Gọi mỗi khi: Đổi kho (Header), Search, hoặc Filter
   useEffect(() => {
-    const fetchData = async () => {
+    // 1. Tạo một timer để hoãn việc gọi API (Debounce)
+    const timer = setTimeout(async () => {
+      // Nếu chưa có thông tin kho thì không làm gì cả
       if (!currentLocation) return;
+
       setLoading(true);
       try {
+        // 2. Gọi API với đầy đủ các bộ lọc
         const data = await getProducts({
           search: searchTerm,
           categoryId: categoryFilter,
           locationId: currentLocation.id,
-          minPrice,
-  maxPrice,
-  sortPrice, // Truyền ID kho để lấy tồn kho tương ứng
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+          sortPrice: sortPrice,
         });
+
+        // 3. Cập nhật dữ liệu vào state
         setProducts(data);
       } catch (error) {
         console.error("Lỗi tải sản phẩm:", error);
       } finally {
         setLoading(false);
       }
-    };
+    }, 400); // Đợi 400ms sau khi người dùng ngừng thao tác mới gọi API
 
-    // Debounce nhẹ cho search để tránh gọi API liên tục
-    const timer = setTimeout(() => {
-      fetchData();
-    }, 300);
-
+    // 4. Cleanup function: Xóa timer cũ nếu người dùng thao tác tiếp
     return () => clearTimeout(timer);
-  }, [currentLocation, searchTerm, categoryFilter, minPrice, maxPrice, sortPrice]);
+
+    // Danh sách các biến cần theo dõi: hễ một trong các biến này đổi là chạy lại useEffect
+  }, [
+    currentLocation,
+    searchTerm,
+    categoryFilter,
+    minPrice,
+    maxPrice,
+    sortPrice,
+  ]);
 
   // --- KHỐI 2: HANDLERS (XỬ LÝ SỰ KIỆN) ---
 
@@ -143,7 +160,7 @@ const sortPrice = params.get("sortPrice");
       return;
     try {
       await deleteProduct(id);
-      setProducts((prev) => prev.filter((p) => p.id !== id)); 
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (error) {
       alert("Không thể xóa sản phẩm này.");
     }
@@ -156,11 +173,26 @@ const sortPrice = params.get("sortPrice");
   };
 
   const handleOpenEdit = (product) => {
-    // Map dữ liệu từ row vào form
-    setModalData({
+    // 1. Chế biến dữ liệu thô từ Table thành dữ liệu chuẩn cho Form Modal
+    const formattedData = {
       ...product,
-      // Backend trả về currentStock, nhưng form không sửa stock trực tiếp ở đây (sẽ dùng phiếu nhập/xuất)
-    });
+
+      // Chuyển đổi Quan hệ Nhiều-Nhiều:
+      // Từ [{supplierId: 'A'}, {supplierId: 'B'}] thành ['A', 'B']
+      supplierIds: product.suppliers?.map((item) => item.supplierId) || [],
+
+      // Ép kiểu dữ liệu số để các ô Input không bị lỗi hoặc hiện trống
+      costPrice: product.costPrice ? Number(product.costPrice) : 0,
+      sellPrice: product.sellPrice ? Number(product.sellPrice) : 0,
+      minStockLevel: product.minStockLevel ? Number(product.minStockLevel) : 10,
+
+      // Giữ lại các trường khác (sku, name, categoryId, unitId...)
+    };
+
+    // 2. Cập nhật vào State để Modal "nhìn thấy" dữ liệu này
+    setModalData(formattedData);
+
+    // 3. Kích hoạt trạng thái Sửa và mở Modal
     setIsEditing(true);
     setIsModalOpen(true);
   };
@@ -203,8 +235,9 @@ const sortPrice = params.get("sortPrice");
         onSave={handleSave}
         initialData={modalData}
         isEditing={isEditing}
-        categories={metadata.categories} // Truyền danh mục thật
-        units={metadata.units} // Truyền ĐVT thật
+        categories={metadata.categories}
+        units={metadata.units}
+        suppliers={metadata.suppliers} // <--- DÒNG NÀY ĐỂ TRUYỀN XUỐNG MODAL
       />
 
       {/* Modal Thẻ Kh */}

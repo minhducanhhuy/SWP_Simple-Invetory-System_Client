@@ -1,7 +1,8 @@
 import api from "./api"; // Giả sử bạn đã có cấu hình axios instance
 
-export const getSuppliers = async () => {
-  const response = await api.get("/suppliers");
+export const getSuppliers = async (locationId = '') => {
+  const query = locationId ? `?locationId=${locationId}` : '';
+  const response = await api.get(`/suppliers${query}`);
   return response.data;
 };
 

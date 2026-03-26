@@ -203,7 +203,19 @@ const SupplierPage = () => {
   const fetchSuppliers = async () => {
     setLoading(true);
     try {
-      const data = await getSuppliers();
+      // Lấy ID kho hiện tại đang được chọn trên Header
+  const storedLocationId = localStorage.getItem('active_location_id');
+      
+      console.log("Giá trị lấy được từ localStorage:", storedLocationId);
+
+      // 2. Nếu không có ID kho, không cho gọi API hoặc báo lỗi
+      if (!storedLocationId) {
+        console.warn("Cảnh báo: Chưa tìm thấy ID kho làm việc!");
+        setSuppliers([]); // Trả về mảng rỗng để giao diện không hiện NCC lung tung
+        return;
+      }
+      // Truyền ID này vào hàm getSuppliers
+      const data = await getSuppliers(storedLocationId);
       setSuppliers(data);
     } catch (err) {
       console.error(err);
@@ -214,6 +226,18 @@ const SupplierPage = () => {
 
   useEffect(() => {
     fetchSuppliers();
+    const handleLocationChange = () => {
+      console.log("Nhận tín hiệu đổi kho, đang cập nhật danh sách...");
+      fetchSuppliers();
+    };
+
+    // 3. Bắt đầu lắng nghe
+    window.addEventListener("locationChanged", handleLocationChange);
+
+    // 4. Quan trọng: Dọn dẹp lắng nghe khi rời khỏi trang
+    return () => {
+      window.removeEventListener("locationChanged", handleLocationChange);
+    };
   }, []);
 
   // Reset về trang 1 mỗi khi người dùng tìm kiếm hoặc lọc
@@ -222,13 +246,26 @@ const SupplierPage = () => {
   }, [searchTerm, filterType, sortOption]);
 
   const handleSave = async (data) => {
+    // 1. Lấy giá trị trực tiếp từ localStorage
+    const savedId = localStorage.getItem('active_location_id');
+    
+    // 2. DEBUG: Log ra để xem tại sao Hà Nội lại bị null
+    console.log("DEBUG - ID hiện tại trong Storage:", savedId);
+    console.log("DEBUG - Type của ID:", typeof savedId);
+
+    // Kiểm tra các trường hợp ID bị lỗi (null, undefined dưới dạng chuỗi)
+    if (!savedId || savedId === "undefined" || savedId === "null") {
+      return alert("Vui lòng chọn Kho làm việc trên thanh Header trước khi thao tác!");
+    }
+
     try {
       if (editingItem) {
-        await updateSupplier(data.id, data);
+        await updateSupplier(data.id, { ...data, locationId: savedId });
         alert("Cập nhật thành công!");
       } else {
         await createSupplier({
           ...data,
+          locationId: savedId, // Gán ID đã lấy được
           initialDebt: Number(data.initialDebt || 0),
         });
         alert("Thêm mới thành công!");

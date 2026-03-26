@@ -310,9 +310,15 @@ const TicketCart = ({
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div className="flex justify-between items-start gap-2">
-                  <p className="text-sm font-bold text-gray-800 truncate">
-                    {item.product.name}
-                  </p>
+                  {/* BỔ SUNG ĐƠN VỊ TÍNH VÀO DƯỚI TÊN SẢN PHẨM */}
+                  <div>
+                    <p className="text-sm font-bold text-gray-800 truncate">
+                      {item.product.name}
+                    </p>
+                    <span className="inline-block mt-0.5 text-[10px] uppercase font-bold text-gray-500 bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded">
+                      ĐVT: {item.product.unit?.name || "N/A"}
+                    </span>
+                  </div>
                   <button
                     onClick={() => onRemoveItem(item.product.id)}
                     className="text-gray-300 hover:text-red-500 transition-colors"
@@ -328,14 +334,15 @@ const TicketCart = ({
                     >
                       <FaMinus />
                     </button>
+                    {/* ĐÃ FIX LỖI THỪA CHỮ "unit" TRONG HÀM onUpdateItem */}
                     <input
                       className="w-8 text-center bg-transparent text-xs font-bold text-gray-800 outline-none"
-                      value={item.quantity}
+                      value={`${item.quantity}`}
                       onChange={(e) =>
                         onUpdateItem(
                           item.product.id,
                           "quantity",
-                          e.target.value,
+                          e.target.value, // Xóa chữ "unit" thừa ở đây đi, nếu không giỏ hàng sẽ vỡ nát!
                         )
                       }
                     />
