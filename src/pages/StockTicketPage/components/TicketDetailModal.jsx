@@ -35,6 +35,36 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
       style: "currency",
       currency: "VND",
     }).format(amount);
+  
+
+  const renderExpiryInfo = (expiryDate) => {
+    if (!expiryDate) return <span className="text-gray-400">—</span>;
+
+    const expDate = new Date(expiryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = expDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const formattedDate = expDate.toLocaleDateString("en-GB"); // dd/mm/yyyy
+
+    if (diffDays < 0) {
+      return (
+        <div className="flex flex-col items-end">
+          <span className="text-red-600 font-bold line-through">{formattedDate}</span>
+          <span className="text-red-600 text-[10px] font-bold">Đã hết HSD</span>
+        </div>
+      );
+    } else if (diffDays <= 15) {
+      return (
+        <div className="flex flex-col items-end">
+          <span className="text-red-600 font-bold">{formattedDate}</span>
+          <span className="text-red-600 text-[10px] font-bold">Sắp hết HSD</span>
+        </div>
+      );
+    }
+    return <span className="text-gray-700 font-medium">{formattedDate}</span>;
+  };
 
   // Helper hiển thị badge loại phiếu
   const renderTypeBadge = (type, reason) => {
@@ -233,6 +263,7 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                           <th className="px-4 py-3">#</th>
                           <th className="px-4 py-3">Mã SP</th>
                           <th className="px-4 py-3">Tên sản phẩm</th>
+                          {ticket.type === "IMPORT" && <th className="px-4 py-3 text-right">Hạn sử dụng</th>}
                           <th className="px-4 py-3 text-center">ĐVT</th>
                           <th className="px-4 py-3 text-right">Số lượng</th>
                           <th className="px-4 py-3 text-right">Đơn giá</th>
@@ -292,6 +323,12 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                                 <td className="px-4 py-3 text-center text-gray-500 text-xs bg-gray-50 rounded">
                                   {item.product.unit?.name}
                                 </td>
+                                {/* HIỂN THỊ DỮ LIỆU HSD (KÈM BÁO ĐỎ) */}
+                                {ticket.type === "IMPORT" && (
+                                  <td className="px-4 py-3 text-right">
+                                    {renderExpiryInfo(item.expiryDate)}
+                                  </td>
+                                )}
                                 <td className="px-4 py-3 text-right font-bold text-blue-600">
                                   {item.quantity}
                                 </td>
@@ -313,7 +350,7 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                       <tfoot className="bg-gray-50 font-bold text-gray-900">
                         <tr>
                           <td
-                            colSpan="6"
+                            colSpan={ticket.type === "IMPORT" ? "7" : "6"}
                             className="px-4 py-3 text-right uppercase text-xs tracking-wider"
                           >
                             Tổng giá trị phiếu:
