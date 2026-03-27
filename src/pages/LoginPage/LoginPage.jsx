@@ -75,9 +75,8 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle Submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Handle Submit (Không cần tham số event e nữa vì không dùng form submit)
+  const handleSubmit = async () => {
     setApiError("");
 
     if (!validateForm()) return;
@@ -111,6 +110,13 @@ const LoginPage = () => {
     }
   };
 
+  // Lắng nghe sự kiện nhấn Enter để trigger submit giống như hành vi của form
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
+
   return (
     <div className="login-page">
       <div className="login-card">
@@ -123,8 +129,8 @@ const LoginPage = () => {
           <p className="login-card__subtitle">Đăng nhập để tiếp tục</p>
         </div>
 
-        {/* Form Section */}
-        <form className="login-form" onSubmit={handleSubmit}>
+        {/* Chuyển từ thẻ form sang thẻ div */}
+        <div className="login-form">
           {/* Username Input */}
           <div className="login-form__group">
             <label htmlFor="username" className="login-form__label">
@@ -140,6 +146,7 @@ const LoginPage = () => {
               placeholder="admin"
               value={formData.username}
               onChange={handleChange}
+              onKeyDown={handleKeyDown}
             />
             {errors.username && (
               <span className="login-form__message">{errors.username}</span>
@@ -162,6 +169,7 @@ const LoginPage = () => {
               placeholder="••••••"
               value={formData.password}
               onChange={handleChange}
+              onKeyDown={handleKeyDown}
             />
 
             {errors.password && (
@@ -181,15 +189,16 @@ const LoginPage = () => {
           {/* API Error Message */}
           {apiError && <div className="login-form__alert">{apiError}</div>}
 
-          {/* Submit Button */}
+          {/* Submit Button: Đổi type thành button và thêm onClick */}
           <button
-            type="submit"
+            type="button"
             className="login-form__button"
+            onClick={handleSubmit}
             disabled={isLoading}
           >
             {isLoading ? "Đang xử lý..." : "Đăng Nhập"}
           </button>
-        </form>
+        </div>
 
         {/* Footer Helper */}
         <div className="login-card__footer">
