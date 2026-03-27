@@ -93,6 +93,14 @@ const LoginPage = () => {
       // 5. Chuyển hướng sang Dashboard
       if (result.user.role === "SALESPERSON") {
         navigate("/pos");
+      } else if (result.user.role === "WAREHOUSE_STAFF") {
+        navigate("/products");
+      } else if (result.user.role === "ADMIN_SYSTEM") {
+        navigate("/employees");
+      } else if (result.user.role === "OWNER") {
+        navigate("/");
+      } else if (result.user.role === "MANAGER") {
+        navigate("/stock-tickets");
       } else {
         navigate("/");
       }

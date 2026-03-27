@@ -93,6 +93,7 @@ const CreateTicketPage = () => {
   //       p.sku.toLowerCase().includes(lowerSearch),
   //   );
   // }, [products, searchTerm]);
+
   const filteredProducts = useMemo(() => {
     let result = products;
 
@@ -106,10 +107,12 @@ const CreateTicketPage = () => {
       );
     }
 
-    // 2. LỌC THEO NHÀ CUNG CẤP (Chỉ kích hoạt khi là phiếu IMPORT MUA HÀNG)
+    // 2. SỬA LẠI ĐOẠN NÀY: Lọc theo Nhà cung cấp
     if (ticketType === "IMPORT" && reason === "BUY" && partnerId) {
-      // Nó sẽ tự động giấu hết các sản phẩm không thuộc NCC này đi
-      result = result.filter((p) => p.supplierId === partnerId);
+      result = result.filter((p) =>
+        // Kiểm tra nếu mảng suppliers của sản phẩm có chứa ID của NCC đang chọn
+        p.suppliers?.some((s) => s.id === partnerId),
+      );
     }
 
     return result;
