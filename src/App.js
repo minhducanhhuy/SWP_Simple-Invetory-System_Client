@@ -24,7 +24,7 @@ import ForgotPasswordPage from "./pages/LoginPage/ForgotPasswordPage";
 import AcceptInvitePage from "./pages/LoginPage/AcceptInvitePage";
 import POSPage from "./pages/POSPage/POSpage";
 import CashbookPage from "./pages/CashBook/CashBookPage";
-import NotificationPage from "./NotificationPage/NotificationPage";
+import NotificationPage from "./pages/NotificationPage/NotificationPage";
 import InvoiceListPage from "./pages/InvoicePage/InvoicePage";
 import DashboardPage from "./pages/DashBoard/DashBoardPage";
 
@@ -62,7 +62,7 @@ function App() {
               }
             >
               {/* THAY VÌ ĐỂ TRỐNG, CHÚNG TA ĐẶT INDEX ROUTE LÀ DASHBOARD */}
-              <Route index element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route
                 path="/products"
                 element={<ProductPageWithPriceFilter />}
