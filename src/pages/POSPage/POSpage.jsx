@@ -46,9 +46,14 @@ const POSPage = () => {
           getCustomers(), // Lấy danh sách khách hàng
         ]);
 
-        const availableProducts = productData.filter(
-          (p) => (p.currentStock || p.inventory?.[0]?.quantity || 0) > 0,
-        );
+        const availableProducts = productData.filter((p) => {
+          // Chỉ lấy tồn kho của đúng chi nhánh đang đứng
+          const localInv = p.inventory?.find(
+            (inv) => inv.locationId === currentLocation.id,
+          );
+          const stock = p.currentStock || localInv?.quantity || 0;
+          return stock > 0;
+        });
         setProducts(availableProducts);
         setCustomers(customerData);
       } catch (error) {
@@ -72,8 +77,11 @@ const POSPage = () => {
 
   // 2. LOGIC GIỎ HÀNG
   const addToCart = (product) => {
-    const stock = product.currentStock || product.inventory?.[0]?.quantity || 0;
-
+    // Tìm đúng tồn kho của chi nhánh hiện tại
+    const localInv = product.inventory?.find(
+      (inv) => inv.locationId === currentLocation.id,
+    );
+    const stock = product.currentStock || localInv?.quantity || 0;
     setCart((prev) => {
       const exist = prev.find((item) => item.productId === product.id);
       if (exist) {
