@@ -201,7 +201,7 @@ const ProfilePage = () => {
                 <input
                   type="password"
                   required
-                  placeholder="Tối thiểu 6 ký tự"
+                  placeholder="Tối thiểu 6 ký tự, phải bao gồm chữ hoa, chữ thường, số và ký tự"
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                   value={passData.newPassword}
                   onChange={(e) =>
