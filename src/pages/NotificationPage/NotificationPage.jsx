@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import api from '../services/api';
+import api from '../../services/api';
 import { FaRegBell, FaCheck, FaEye } from 'react-icons/fa';
 
 const NotificationPage = () => {
