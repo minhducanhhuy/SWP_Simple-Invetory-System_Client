@@ -62,7 +62,7 @@ function App() {
               }
             >
               {/* THAY VÌ ĐỂ TRỐNG, CHÚNG TA ĐẶT INDEX ROUTE LÀ DASHBOARD */}
-              <Route index element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route
                 path="/products"
                 element={<ProductPageWithPriceFilter />}

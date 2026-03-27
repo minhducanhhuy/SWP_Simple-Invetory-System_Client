@@ -54,6 +54,17 @@ const Sidebar = () => {
   // Cấu hình danh sách menu và quyền truy cập
   // allowedRoles: Các role được phép nhìn thấy menu này
   const MENU_GROUPS = [
+    {
+      label: "Tổng quan",
+      items: [
+        {
+          path: "/dashboard",
+          label: "Dashboard",
+          icon: <FaChartPie className="h-5 w-5" />,
+          allowedRoles: ["OWNER"],
+        },
+      ],
+    },
     // === ĐÃ THÊM NHÓM BÁN HÀNG & DOANH THU VÀO ĐÂY ===
     {
       label: "Bán hàng & Doanh thu",
