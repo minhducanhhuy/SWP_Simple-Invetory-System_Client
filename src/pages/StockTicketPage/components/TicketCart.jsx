@@ -16,8 +16,8 @@ const TicketCart = ({
   cart,
   ticketType,
   setTicketType,
-  reason, // Props reason từ Cha truyền xuống
-  setReason, // Hàm setReason từ Cha truyền xuống
+  reason,
+  setReason,
   note,
   setNote,
   targetLocationId,
@@ -56,7 +56,7 @@ const TicketCart = ({
     },
   ];
 
-  // 2. Mapping lý do chi tiết (Khớp 100% với Enum DB)
+  // 2. Mapping lý do chi tiết
   const REASON_MAPPING = {
     IMPORT: [
       { value: "BUY", label: "Nhập mua hàng" },
@@ -81,16 +81,15 @@ const TicketCart = ({
       options: group.options.filter(
         (opt) =>
           opt.allowedRoles.includes("ANY") ||
-          opt.allowedRoles.includes(userRole),
+          opt.allowedRoles.includes(userRole)
       ),
     })).filter((group) => group.options.length > 0);
   }, [userRole]);
 
-  // Tự động gán loại phiếu mặc định nếu mảng options thay đổi
   useEffect(() => {
     if (availableOptions.length > 0) {
       const flatOptions = availableOptions.flatMap((g) =>
-        g.options.map((o) => o.value),
+        g.options.map((o) => o.value)
       );
       if (!flatOptions.includes(ticketType)) {
         setTicketType(flatOptions[0]);
@@ -100,8 +99,9 @@ const TicketCart = ({
 
   const totalAmount = cart.reduce(
     (sum, item) => sum + Number(item.quantity) * Number(item.price),
-    0,
+    0
   );
+
   const formatMoney = (amount) =>
     new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -142,23 +142,20 @@ const TicketCart = ({
 
   return (
     <div className="w-[420px] bg-white flex flex-col border-l border-gray-200 shadow-2xl z-20 shrink-0 relative">
-      {/* HEADER */}
+      {/* HEADER ĐÃ ĐƯỢC TỐI ƯU CHIỀU CAO */}
       <div
-        className={`p-5 border-b border-dashed ${config.theme} transition-all duration-300`}
+        className={`p-4 pb-3 border-b border-dashed ${config.theme} transition-all duration-300`}
       >
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-center mb-3">
           <div>
-            <h2 className="text-lg font-black uppercase flex items-center gap-2">
+            <h2 className="text-base font-black uppercase flex items-center gap-2">
               {config.icon} {config.label}
             </h2>
-            {/* <div className="flex items-center gap-1 text-xs font-medium opacity-80 mt-1 ml-1">
-              <FaCalendarDays /> {new Date().toLocaleDateString("vi-VN")} */}
-
-            <div className="flex items-center gap-1 text-xs font-medium opacity-80 mt-1 ml-1">
+            <div className="flex items-center gap-1 text-xs font-medium opacity-80 mt-0.5 ml-1">
               <FaCalendarDays />
               <input
                 type="date"
-                className="bg-transparent border-b border-dashed border-gray-400 focus:border-blue-500 outline-none ml-1 cursor-pointer font-bold text-gray-700"
+                className="bg-transparent border-b border-dashed border-gray-500 focus:border-blue-500 outline-none ml-1 cursor-pointer font-bold text-gray-700 w-[110px]"
                 value={ticketDate}
                 onChange={(e) => setTicketDate(e.target.value)}
               />
@@ -166,11 +163,11 @@ const TicketCart = ({
           </div>
 
           <select
-            className="text-xs font-bold uppercase bg-white/80 border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer max-w-[160px]"
+            className="text-xs font-bold uppercase bg-white/80 border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer max-w-[150px]"
             value={ticketType}
             onChange={(e) => {
               setTicketType(e.target.value);
-              setReason(""); // Khi đổi Nhập/Xuất thì reset Lý do
+              setReason("");
               setPartnerId("");
               setTargetLocationId("");
             }}
@@ -187,73 +184,69 @@ const TicketCart = ({
           </select>
         </div>
 
-        {/* FORM FIELDS */}
-        <div className="space-y-3">
-          {/* --- DROPDOWN LÝ DO Ở ĐÂY --- */}
-          <div className="animate-in fade-in slide-in-from-top-1 bg-white/50 p-2 rounded-lg border border-gray-200 shadow-sm">
-            <label className="text-[10px] font-bold uppercase tracking-wider text-gray-700 mb-1 block">
-              Lý do thực hiện <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full text-sm p-2.5 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-sm font-medium"
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value);
-                // Đổi lý do thì tự reset form bên dưới để tránh chọn nhầm dữ liệu cũ
-                setPartnerId("");
-                setTargetLocationId("");
-              }}
-            >
-              <option value="">-- Chọn lý do --</option>
-              {REASON_MAPPING[ticketType]?.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Kho Đích / Kho Nguồn (CHỈ HIỆN KHI CHỌN CHUYỂN KHO) */}
-          {reason === "TRANSFER" && (
+        {/* FORM FIELDS - RÚT GỌN LÊN 1 HÀNG */}
+        <div className="space-y-2.5">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Lý do */}
             <div className="animate-in fade-in slide-in-from-top-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-1 block">
-                {ticketType === "EXPORT" ? "Chuyển đến kho" : "Nhận từ kho"}{" "}
-                <span className="text-red-500">*</span>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-gray-700 mb-0.5 block">
+                Lý do thực hiện <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full text-sm p-2.5 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
-                value={targetLocationId}
-                onChange={(e) => setTargetLocationId(e.target.value)}
+                className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-blue-500 outline-none shadow-sm font-medium"
+                value={reason}
+                onChange={(e) => {
+                  setReason(e.target.value);
+                  setPartnerId("");
+                  setTargetLocationId("");
+                }}
               >
-                <option value="">-- Chọn kho --</option>
-                {otherLocations.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
+                <option value="">-- Chọn lý do --</option>
+                {REASON_MAPPING[ticketType]?.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
                   </option>
                 ))}
               </select>
             </div>
-          )}
 
-          {/* Đối Tác (CHỈ HIỆN KHI MUA, BÁN VÀ TRẢ HÀNG) */}
-          {["BUY", "SELL", "RETURN_FROM_CUST", "RETURN_TO_SUPP"].includes(
-            reason,
-          ) && (
-            <div className="animate-in fade-in slide-in-from-top-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-1 block">
-                {["BUY", "RETURN_TO_SUPP"].includes(reason)
-                  ? "Nhà Cung Cấp"
-                  : "Khách Hàng"}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <FaUserTag className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            {/* Kho Đích / Kho Nguồn */}
+            {reason === "TRANSFER" && (
+              <div className="animate-in fade-in slide-in-from-top-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5 block truncate">
+                  {ticketType === "EXPORT" ? "Chuyển đến" : "Nhận từ"}{" "}
+                  <span className="text-red-500">*</span>
+                </label>
                 <select
-                  className="w-full text-sm p-2.5 pl-9 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
+                  className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
+                  value={targetLocationId}
+                  onChange={(e) => setTargetLocationId(e.target.value)}
+                >
+                  <option value="">-- Chọn kho --</option>
+                  {otherLocations.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Đối Tác */}
+            {["BUY", "SELL", "RETURN_FROM_CUST", "RETURN_TO_SUPP"].includes(reason) && (
+              <div className="animate-in fade-in slide-in-from-top-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5 block truncate">
+                  {["BUY", "RETURN_TO_SUPP"].includes(reason)
+                    ? "Nhà Cung Cấp"
+                    : "Khách Hàng"}{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
                   value={partnerId}
                   onChange={(e) => setPartnerId(e.target.value)}
                 >
-                  <option value="">-- Chọn đối tượng --</option>
+                  <option value="">-- Chọn --</option>
                   {["BUY", "RETURN_TO_SUPP"].includes(reason)
                     ? suppliers.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -267,18 +260,15 @@ const TicketCart = ({
                       ))}
                 </select>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Ghi chú */}
-          <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-1 block">
-              Ghi chú / Mô tả
-            </label>
+          <div className="animate-in fade-in slide-in-from-top-1">
             <textarea
-              className="w-full text-sm p-3 rounded-xl border-none bg-white/60 focus:bg-white ring-1 ring-black/5 focus:ring-2 focus:ring-blue-400 outline-none shadow-sm resize-none transition-all placeholder-gray-400"
-              placeholder="Nhập ghi chú phiếu..."
-              rows="2"
+              className="w-full text-xs px-3 py-2 rounded-lg border border-gray-200 bg-white/60 focus:bg-white focus:ring-2 focus:ring-blue-400 outline-none shadow-sm resize-none transition-all placeholder-gray-400"
+              placeholder="Ghi chú / Mô tả thêm (nếu có)..."
+              rows="1"
               value={note}
               onChange={(e) => setNote(e.target.value)}
             />
@@ -310,7 +300,6 @@ const TicketCart = ({
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div className="flex justify-between items-start gap-2">
-                  {/* BỔ SUNG ĐƠN VỊ TÍNH VÀO DƯỚI TÊN SẢN PHẨM */}
                   <div>
                     <p className="text-sm font-bold text-gray-800 truncate">
                       {item.product.name}
@@ -326,6 +315,22 @@ const TicketCart = ({
                     <FaXmark />
                   </button>
                 </div>
+
+                {/* Ô NHẬP HẠN SỬ DỤNG KHI LÀ PHIẾU NHẬP */}
+                {ticketType === "IMPORT" && (
+                  <div className="mt-1 mb-2">
+                    <input
+                      type="text"
+                      placeholder="HSD (dd/mm/yyyy)"
+                      className="w-full max-w-[140px] text-xs px-2 py-1 bg-yellow-50 border border-yellow-200 rounded outline-none focus:ring-1 focus:ring-yellow-400 placeholder-gray-400 font-medium"
+                      value={item.expiryDate || ""}
+                      onChange={(e) =>
+                        onUpdateItem(item.product.id, "expiryDate", e.target.value)
+                      }
+                    />
+                  </div>
+                )}
+
                 <div className="flex items-end justify-between mt-1">
                   <div className="flex items-center bg-gray-100 rounded-lg p-0.5 border border-gray-200">
                     <button
@@ -334,16 +339,11 @@ const TicketCart = ({
                     >
                       <FaMinus />
                     </button>
-                    {/* ĐÃ FIX LỖI THỪA CHỮ "unit" TRONG HÀM onUpdateItem */}
                     <input
                       className="w-8 text-center bg-transparent text-xs font-bold text-gray-800 outline-none"
                       value={`${item.quantity}`}
                       onChange={(e) =>
-                        onUpdateItem(
-                          item.product.id,
-                          "quantity",
-                          e.target.value, // Xóa chữ "unit" thừa ở đây đi, nếu không giỏ hàng sẽ vỡ nát!
-                        )
+                        onUpdateItem(item.product.id, "quantity", e.target.value)
                       }
                     />
                     <button

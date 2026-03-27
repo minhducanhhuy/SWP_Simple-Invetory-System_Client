@@ -20,24 +20,23 @@ const ProductModal = ({
     ...initialData,
     supplierIds: initialData?.supplierIds || []
   });
+
   const handleSupplierChange = (supplierId) => {
     setFormData(prev => {
-      // Bảo vệ: Nếu vì lý do gì đó supplierIds vẫn là undefined thì gán mảng rỗng
       const currentIds = prev.supplierIds || [];
-
       const isExist = currentIds.includes(supplierId);
 
       return {
         ...prev,
         supplierIds: isExist
-          ? currentIds.filter(id => id !== supplierId) // Bỏ chọn: lọc ID ra
-          : [...currentIds, supplierId]               // Chọn thêm: push ID vào
+          ? currentIds.filter(id => id !== supplierId)
+          : [...currentIds, supplierId]
       };
     });
   };
+
   const [errors, setErrors] = useState({});
 
-  // Reset form khi initialData thay đổi (khi mở modal)
   useEffect(() => {
     setFormData(initialData);
     setErrors({});
@@ -47,8 +46,7 @@ const ProductModal = ({
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const newValue =
-      name === "sku" ? value.trimStart() : value;
+    const newValue = name === "sku" ? value.trimStart() : value;
     setFormData({ ...formData, [name]: newValue });
     if (errors[name]) setErrors({ ...errors, [name]: "" });
   };
@@ -59,6 +57,15 @@ const ProductModal = ({
     if (!formData.name.trim()) newErrors.name = "Tên bắt buộc";
     if (!formData.categoryId) newErrors.categoryId = "Chọn danh mục";
     if (!formData.unitId) newErrors.unitId = "Chọn ĐVT";
+
+    // [THÊM LOGIC] Kiểm tra Giá Bán phải lớn hơn Giá Vốn
+    const cost = Number(formData.costPrice || 0);
+    const sell = Number(formData.sellPrice || 0);
+    
+    if (sell <= cost) {
+      newErrors.sellPrice = "Giá bán phải lớn hơn giá vốn!";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,7 +76,6 @@ const ProductModal = ({
     }
   };
 
-  // Styles reused
   const inputStyle = (hasError) =>
     `w-full rounded-lg border ${hasError
       ? "border-red-500 text-red-900 focus:ring-red-100"
@@ -203,33 +209,39 @@ const ProductModal = ({
                 </div>
               </div>
             </div>
+            
+            {/* GIÁ BÁN - ĐÃ CẬP NHẬT GIAO DIỆN HIỂN THỊ LỖI */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Giá Bán
+                Giá Bán <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <input
                   type="number"
                   name="sellPrice"
-                  className={`${inputStyle(false)} pl-9 font-semibold text-blue-600`}
+                  className={`${inputStyle(errors.sellPrice)} pl-9 font-semibold ${errors.sellPrice ? '' : 'text-blue-600'}`}
                   value={formData.sellPrice}
                   onChange={handleInputChange}
                 />
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-blue-500">
+                <div className={`pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 ${errors.sellPrice ? 'text-red-500' : 'text-blue-500'}`}>
                   <FaDollarSign className="h-4 w-4" />
                 </div>
               </div>
+              {errors.sellPrice && (
+                <p className="mt-1 text-xs text-red-500 font-medium">{errors.sellPrice}</p>
+              )}
             </div>
+
             {/*Description*/}
-            <div>
-              <label>Mô tả sản phẩm</label>
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-semibold text-gray-700">Mô tả sản phẩm</label>
               <textarea
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={4}
-                className="w-full border rounded p-2"
+                className={inputStyle(false)}
                 placeholder="Nhập mô tả sản phẩm..."
               />
             </div>

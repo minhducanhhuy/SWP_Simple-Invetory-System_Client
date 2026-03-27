@@ -172,6 +172,7 @@ const CreateTicketPage = () => {
       productId: item.product.id,
       quantity: Number(item.quantity),
       price: Number(item.price),
+      expiryDate: item.expiryDate || undefined,
     }));
     console.log(details);
     // 1. Tạo Payload gốc (Khớp 100% với DTO ở NestJS)
@@ -204,7 +205,19 @@ const CreateTicketPage = () => {
       alert("Tạo phiếu thành công!");
       navigate("/stock-tickets");
     } catch (error) {
-      alert(error.response?.data?.message || "Lỗi khi tạo phiếu");
+      let errorMessage = error.response?.data?.message || "Lỗi khi tạo phiếu";
+
+      // 1. NestJS thường trả về một mảng các lỗi, ta ưu tiên lấy lỗi đầu tiên
+      if (Array.isArray(errorMessage)) {
+        errorMessage = errorMessage[0];
+      }
+
+      // 2. Dùng Regex cắt bỏ phần prefix "details.0.", "details.1."... của NestJS
+      if (typeof errorMessage === "string") {
+        errorMessage = errorMessage.replace(/^details\.\d+\./, "");
+      }
+
+      alert(errorMessage);
     }
   };
 

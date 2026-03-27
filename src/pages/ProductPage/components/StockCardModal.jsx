@@ -29,6 +29,36 @@ const StockCardModal = ({ isOpen, onClose, productId }) => {
 
   if (!isOpen) return null;
 
+  // HÀM HIỂN THỊ VÀ CẢNH BÁO HẠN SỬ DỤNG
+  const renderExpiryInfo = (expiryDate) => {
+    if (!expiryDate) return <span className="text-gray-400">—</span>;
+
+    const expDate = new Date(expiryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = expDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const formattedDate = expDate.toLocaleDateString("en-GB"); // dd/mm/yyyy
+
+    if (diffDays < 0) {
+      return (
+        <div className="flex flex-col">
+          <span className="text-red-600 font-bold line-through">{formattedDate}</span>
+          <span className="text-red-600 text-[10px] font-bold">Đã hết HSD</span>
+        </div>
+      );
+    } else if (diffDays <= 15) {
+      return (
+        <div className="flex flex-col">
+          <span className="text-red-600 font-bold">{formattedDate}</span>
+          <span className="text-red-600 text-[10px] font-bold">Sắp hết HSD</span>
+        </div>
+      );
+    }
+    return <span className="text-gray-700 font-medium">{formattedDate}</span>;
+  };
+
   // Helper render loại phiếu và lý do
   const renderTypeAndReason = (ticket) => {
     let typeName = "";
@@ -86,7 +116,8 @@ const StockCardModal = ({ isOpen, onClose, productId }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      {/* Nới rộng w-full max-w-5xl để đủ chỗ cho cột mới */}
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="bg-gray-800 px-6 py-4 flex justify-between items-center text-white">
           <div>
@@ -126,6 +157,7 @@ const StockCardModal = ({ isOpen, onClose, productId }) => {
                     <th className="px-4 py-3 w-32">Ngày chứng từ</th>
                     <th className="px-4 py-3 w-32">Mã phiếu</th>
                     <th className="px-4 py-3">Diễn giải / Loại phiếu</th>
+                    <th className="px-4 py-3">Hạn sử dụng</th> {/* Cột HSD MỚI */}
                     <th className="px-4 py-3 text-right">Số lượng</th>
                     <th className="px-4 py-3 text-right">Đơn giá</th>
                     <th className="px-4 py-3 text-right">Người tạo</th>
@@ -145,6 +177,10 @@ const StockCardModal = ({ isOpen, onClose, productId }) => {
                       </td>
                       <td className="px-4 py-3">
                         {renderTypeAndReason(tx.ticket)}
+                      </td>
+                      {/* Hiển thị thông tin Hạn sử dụng */}
+                      <td className="px-4 py-3">
+                        {renderExpiryInfo(tx.expiryDate)}
                       </td>
                       <td
                         className={`px-4 py-3 text-right font-bold ${
