@@ -81,7 +81,7 @@ const TicketCart = ({
       options: group.options.filter(
         (opt) =>
           opt.allowedRoles.includes("ANY") ||
-          opt.allowedRoles.includes(userRole)
+          opt.allowedRoles.includes(userRole),
       ),
     })).filter((group) => group.options.length > 0);
   }, [userRole]);
@@ -89,7 +89,7 @@ const TicketCart = ({
   useEffect(() => {
     if (availableOptions.length > 0) {
       const flatOptions = availableOptions.flatMap((g) =>
-        g.options.map((o) => o.value)
+        g.options.map((o) => o.value),
       );
       if (!flatOptions.includes(ticketType)) {
         setTicketType(flatOptions[0]);
@@ -99,7 +99,7 @@ const TicketCart = ({
 
   const totalAmount = cart.reduce(
     (sum, item) => sum + Number(item.quantity) * Number(item.price),
-    0
+    0,
   );
 
   const formatMoney = (amount) =>
@@ -233,7 +233,9 @@ const TicketCart = ({
             )}
 
             {/* Đối Tác */}
-            {["BUY", "SELL", "RETURN_FROM_CUST", "RETURN_TO_SUPP"].includes(reason) && (
+            {["BUY", "SELL", "RETURN_FROM_CUST", "RETURN_TO_SUPP"].includes(
+              reason,
+            ) && (
               <div className="animate-in fade-in slide-in-from-top-1">
                 <label className="text-[10px] font-bold uppercase tracking-wider opacity-70 mb-0.5 block truncate">
                   {["BUY", "RETURN_TO_SUPP"].includes(reason)
@@ -317,7 +319,7 @@ const TicketCart = ({
                 </div>
 
                 {/* Ô NHẬP HẠN SỬ DỤNG KHI LÀ PHIẾU NHẬP */}
-                {ticketType === "IMPORT" && (
+                {ticketType === "IMPORT" && reason === "BUY" && (
                   <div className="mt-1 mb-2">
                     <input
                       type="text"
@@ -325,7 +327,11 @@ const TicketCart = ({
                       className="w-full max-w-[140px] text-xs px-2 py-1 bg-yellow-50 border border-yellow-200 rounded outline-none focus:ring-1 focus:ring-yellow-400 placeholder-gray-400 font-medium"
                       value={item.expiryDate || ""}
                       onChange={(e) =>
-                        onUpdateItem(item.product.id, "expiryDate", e.target.value)
+                        onUpdateItem(
+                          item.product.id,
+                          "expiryDate",
+                          e.target.value,
+                        )
                       }
                     />
                   </div>
@@ -343,7 +349,11 @@ const TicketCart = ({
                       className="w-8 text-center bg-transparent text-xs font-bold text-gray-800 outline-none"
                       value={`${item.quantity}`}
                       onChange={(e) =>
-                        onUpdateItem(item.product.id, "quantity", e.target.value)
+                        onUpdateItem(
+                          item.product.id,
+                          "quantity",
+                          e.target.value,
+                        )
                       }
                     />
                     <button
