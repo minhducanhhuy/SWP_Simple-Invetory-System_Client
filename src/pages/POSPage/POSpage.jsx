@@ -6,7 +6,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { getProducts } from "../../services/productService";
 import { createInvoice } from "../../services/invoiceService";
 import ReceiptModal from "./ReceiptModal";
-import { getCustomers } from "../../services/customerService"; // <--- Import gọi API Khách hàng
+import { getCustomers, createCustomer } from "../../services/customerService"; // <--- Import gọi API Khách hàng
+
 import {
   FaCartShopping,
   FaMoneyBillWave,
@@ -36,6 +37,14 @@ const POSPage = () => {
 
   const [showReceipt, setShowReceipt] = useState(false);
   const [currentInvoice, setCurrentInvoice] = useState(null);
+
+  // === THÊM STATE CHO MODAL KHÁCH HÀNG MỚI ===
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [customerForm, setCustomerForm] = useState({
+    name: "",
+    phone: "",
+    address: "",
+  });
 
   // 1. LẤY DANH SÁCH SẢN PHẨM & KHÁCH HÀNG
   const fetchData = async () => {
@@ -74,6 +83,38 @@ const POSPage = () => {
         p.sku.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [products, searchTerm]);
+
+  // === HÀM LƯU KHÁCH HÀNG NHANH ===
+  const handleAddCustomer = async (e) => {
+    e.preventDefault();
+    if (!customerForm.name || !customerForm.phone) {
+      return alert("Vui lòng nhập Tên và Số điện thoại!");
+    }
+
+    setIsSubmitting(true);
+    try {
+      // 1. TẠO PAYLOAD CÓ CHỨA MÃ TỰ SINH
+      const payload = {
+        ...customerForm,
+        code: `KH${Date.now()}`, // Tự động sinh mã, VD: KH17098765432
+      };
+
+      // 2. GỬI PAYLOAD MỚI NÀY XUỐNG API
+      const newCus = await createCustomer(payload);
+
+      // Thêm khách mới vào list hiện tại
+      setCustomers((prev) => [...prev, newCus]);
+      // Tự động chọn khách hàng này cho hóa đơn luôn
+      setSelectedCustomerId(newCus.id);
+      // Đóng modal & reset form
+      setIsCustomerModalOpen(false);
+      setCustomerForm({ name: "", phone: "", address: "" });
+    } catch (error) {
+      alert("Lỗi tạo KH: " + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // 2. LOGIC GIỎ HÀNG
   const addToCart = (product) => {
@@ -316,20 +357,31 @@ const POSPage = () => {
         {/* CỘT PHẢI: HÓA ĐƠN & THANH TOÁN */}
         <div className="w-[420px] bg-white shadow-[-10px_0_20px_-10px_rgba(0,0,0,0.1)] flex flex-col z-10 shrink-0">
           {/* KHU VỰC CHỌN KHÁCH HÀNG (ĐÁP ỨNG US14) */}
-          <div className="px-5 py-3 border-b border-gray-200 bg-blue-50 flex items-center gap-3">
-            <FaUserPlus className="text-blue-600 text-lg" />
-            <select
-              className="flex-1 bg-white border border-blue-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              value={selectedCustomerId}
-              onChange={(e) => setSelectedCustomerId(e.target.value)}
-            >
-              <option value="">-- Khách vãng lai --</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} ({c.phone || "Không có SĐT"})
-                </option>
-              ))}
-            </select>
+          <div className="px-5 py-3 border-b border-gray-200 bg-blue-50 flex items-center gap-2">
+            <FaUserPlus className="text-blue-600 text-lg shrink-0" />
+            <div className="flex flex-1 gap-2">
+              <select
+                className="flex-1 bg-white border border-blue-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                value={selectedCustomerId}
+                onChange={(e) => setSelectedCustomerId(e.target.value)}
+              >
+                <option value="">-- Khách vãng lai --</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.phone || "Không có SĐT"})
+                  </option>
+                ))}
+              </select>
+
+              {/* NÚT THÊM KHÁCH HÀNG NHANH */}
+              <button
+                onClick={() => setIsCustomerModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-colors flex items-center justify-center shadow-sm"
+                title="Thêm khách hàng mới"
+              >
+                <FaPlus />
+              </button>
+            </div>
           </div>
 
           <div className="px-5 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
@@ -488,6 +540,92 @@ const POSPage = () => {
         onClose={handleCloseReceipt}
         invoiceData={currentInvoice}
       />
+      {/* ================= MODAL THÊM KHÁCH HÀNG NHANH (ĐÃ ĐƯỢC BỌC ĐIỀU KIỆN) ================= */}
+      {isCustomerModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+              <h3 className="font-bold text-gray-800 flex items-center gap-2">
+                <FaUserPlus className="text-blue-600" /> Thêm Khách Hàng
+              </h3>
+              <button
+                onClick={() => setIsCustomerModalOpen(false)}
+                className="text-gray-400 hover:text-red-500 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCustomer} className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Tên khách hàng <span className="text-red-500">*</span>
+                </label>
+                <input
+                  autoFocus
+                  required
+                  className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                  placeholder="VD: Nguyễn Văn A..."
+                  value={customerForm.name}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, name: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Số điện thoại <span className="text-red-500">*</span>
+                </label>
+                <input
+                  required
+                  className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                  placeholder="VD: 0987654321..."
+                  value={customerForm.phone}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      phone: e.target.value.replace(/\D/g, ""),
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Địa chỉ
+                </label>
+                <input
+                  className="w-full border border-gray-200 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                  placeholder="VD: Hà Nội..."
+                  value={customerForm.address}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      address: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsCustomerModalOpen(false)}
+                  className="flex-1 py-2.5 bg-gray-100 text-gray-600 font-bold rounded-lg hover:bg-gray-200 transition"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md shadow-blue-200"
+                >
+                  {isSubmitting ? "Đang lưu..." : "Lưu Khách"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

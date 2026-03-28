@@ -11,12 +11,12 @@ import {
   FaCashRegister,
   FaWallet,
   FaSearch,
-  FaFileExcel
+  FaFileExcel,
 } from "react-icons/fa";
 
 // === 1. IMPORT SIDEBAR & HEADER VÀO ĐÂY ===
 import Sidebar from "../../components/Sidebar/Sidebar"; // Chỉnh lại đường dẫn cho đúng thư mục của bạn
-import Header from "../../components/Header/Header";    // Thêm Header nếu bạn muốn có thanh chọn kho ở trên
+import Header from "../../components/Header/Header"; // Thêm Header nếu bạn muốn có thanh chọn kho ở trên
 // ==========================================
 
 const CashbookPage = () => {
@@ -88,36 +88,41 @@ const CashbookPage = () => {
   return (
     // === 2. BỌC TOÀN BỘ TRANG VÀO MỘT THẺ DIV CÓ flex h-screen ===
     <div className="flex h-screen overflow-hidden bg-slate-50">
-      
       {/* 3. ĐẶT SIDEBAR Ở ĐÂY (Cột trái) */}
       <Sidebar />
 
       {/* 4. CỘT PHẢI (Chứa Header và Nội dung chính) */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        
         {/* ĐẶT HEADER Ở ĐÂY (Nếu bạn cần thanh chọn kho ở trên) */}
-        <Header /> 
+        <Header />
 
         {/* NỘI DUNG CHÍNH (Có thể cuộn được) */}
         <main className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          
           {/* 1. THỐNG KÊ NHANH */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-              <p className="text-xs text-gray-500 font-bold tracking-wider mb-1">TỔNG THU</p>
+              <p className="text-xs text-gray-500 font-bold tracking-wider mb-1">
+                TỔNG THU
+              </p>
               <h2 className="text-2xl font-black text-green-600">
                 {totalIn.toLocaleString("vi-VN")} ₫
               </h2>
             </div>
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-              <p className="text-xs text-gray-500 font-bold tracking-wider mb-1">TỔNG CHI</p>
+              <p className="text-xs text-gray-500 font-bold tracking-wider mb-1">
+                TỔNG CHI
+              </p>
               <h2 className="text-2xl font-black text-red-500">
                 {totalOut.toLocaleString("vi-VN")} ₫
               </h2>
             </div>
             <div className="bg-slate-800 p-5 rounded-xl shadow-sm flex flex-col justify-center">
-              <p className="text-xs text-slate-400 font-bold tracking-wider mb-1">TỒN QUỸ HIỆN TẠI</p>
-              <h2 className={`text-2xl font-black ${balance >= 0 ? "text-white" : "text-red-400"}`}>
+              <p className="text-xs text-slate-400 font-bold tracking-wider mb-1">
+                TỒN QUỸ HIỆN TẠI
+              </p>
+              <h2
+                className={`text-2xl font-black ${balance >= 0 ? "text-white" : "text-red-400"}`}
+              >
                 {balance.toLocaleString("vi-VN")} ₫
               </h2>
             </div>
@@ -125,7 +130,6 @@ const CashbookPage = () => {
 
           {/* 2. CARD NỘI DUNG CHÍNH */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            
             {/* HEADER CỦA CARD */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
               <div>
@@ -136,7 +140,7 @@ const CashbookPage = () => {
                   Quản lý dòng tiền, các khoản thu chi nội bộ và bán hàng
                 </p>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => navigate("/pos")}
@@ -146,7 +150,11 @@ const CashbookPage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    setFormData({ ...formData, type: "IN", category: "OTHER_IN" });
+                    setFormData({
+                      ...formData,
+                      type: "IN",
+                      category: "OTHER_IN",
+                    });
                     setIsModalOpen(true);
                   }}
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition-colors flex items-center gap-2"
@@ -155,7 +163,11 @@ const CashbookPage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    setFormData({ ...formData, type: "OUT", category: "EXPENSE" });
+                    setFormData({
+                      ...formData,
+                      type: "OUT",
+                      category: "EXPENSE",
+                    });
                     setIsModalOpen(true);
                   }}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm transition-colors flex items-center gap-2"
@@ -191,24 +203,42 @@ const CashbookPage = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Mã Phiếu</th>
-                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Thời gian</th>
-                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Loại / Hạng mục</th>
-                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Người tạo</th>
-                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Ghi chú</th>
-                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Số tiền</th>
+                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Mã Phiếu
+                    </th>
+                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Thời gian
+                    </th>
+                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Loại / Hạng mục
+                    </th>
+                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Người tạo
+                    </th>
+                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      Ghi chú
+                    </th>
+                    <th className="py-3 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">
+                      Số tiền
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {transactions.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="py-12 text-center text-sm text-gray-400">
+                      <td
+                        colSpan="6"
+                        className="py-12 text-center text-sm text-gray-400"
+                      >
                         Không tìm thấy phiếu nào phù hợp với bộ lọc.
                       </td>
                     </tr>
                   ) : (
                     transactions.map((t) => (
-                      <tr key={t.id} className="hover:bg-slate-50 transition-colors">
+                      <tr
+                        key={t.id}
+                        className="hover:bg-slate-50 transition-colors"
+                      >
                         <td className="py-3 px-4 text-sm font-semibold text-blue-600">
                           {t.code}
                         </td>
@@ -218,12 +248,13 @@ const CashbookPage = () => {
                         <td className="py-3 px-4">
                           <span
                             className={`text-xs font-bold px-2 py-1 rounded-md ${
-                              t.type === "IN" 
-                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100" 
+                              t.type === "IN"
+                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                                 : "bg-red-50 text-red-600 border border-red-100"
                             }`}
                           >
-                            {t.type === "IN" ? "THU" : "CHI"} - {translateCategory(t.category)}
+                            {t.type === "IN" ? "THU" : "CHI"} -{" "}
+                            {translateCategory(t.category)}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-sm font-medium text-gray-700">
@@ -234,7 +265,9 @@ const CashbookPage = () => {
                         </td>
                         <td
                           className={`py-3 px-4 text-sm font-bold text-right ${
-                            t.type === "IN" ? "text-emerald-600" : "text-red-500"
+                            t.type === "IN"
+                              ? "text-emerald-600"
+                              : "text-red-500"
                           }`}
                         >
                           {t.type === "IN" ? "+" : "-"}
@@ -280,7 +313,7 @@ const CashbookPage = () => {
                       <option value="EXPENSE">
                         Chi phí (Điện, nước, lương...)
                       </option>
-                      <option value="IMPORT_PAY">Trả tiền nhà cung cấp</option>
+
                       <option value="OTHER_OUT">Chi khác</option>
                     </>
                   )}
@@ -326,8 +359,8 @@ const CashbookPage = () => {
                 <button
                   type="submit"
                   className={`px-5 py-2 text-sm font-bold text-white rounded-lg shadow-sm transition-colors ${
-                    formData.type === "IN" 
-                      ? "bg-emerald-600 hover:bg-emerald-700" 
+                    formData.type === "IN"
+                      ? "bg-emerald-600 hover:bg-emerald-700"
                       : "bg-blue-600 hover:bg-blue-700"
                   }`}
                 >
