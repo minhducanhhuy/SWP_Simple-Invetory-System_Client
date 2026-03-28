@@ -177,9 +177,8 @@ const ProductPage = () => {
     const formattedData = {
       ...product,
 
-      // Chuyển đổi Quan hệ Nhiều-Nhiều:
-      // Từ [{supplierId: 'A'}, {supplierId: 'B'}] thành ['A', 'B']
-      supplierIds: product.suppliers?.map((item) => item.supplierId) || [],
+      // [SỬA Ở ĐÂY]: Đổi item.supplierId thành item.id
+      supplierIds: product.suppliers?.map((item) => item.id) || [],
 
       // Ép kiểu dữ liệu số để các ô Input không bị lỗi hoặc hiện trống
       costPrice: product.costPrice ? Number(product.costPrice) : 0,

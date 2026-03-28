@@ -18,19 +18,19 @@ const ProductModal = ({
 }) => {
   const [formData, setFormData] = useState({
     ...initialData,
-    supplierIds: initialData?.supplierIds || []
+    supplierIds: initialData?.supplierIds || [],
   });
 
   const handleSupplierChange = (supplierId) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const currentIds = prev.supplierIds || [];
       const isExist = currentIds.includes(supplierId);
 
       return {
         ...prev,
         supplierIds: isExist
-          ? currentIds.filter(id => id !== supplierId)
-          : [...currentIds, supplierId]
+          ? currentIds.filter((id) => id !== supplierId)
+          : [...currentIds, supplierId],
       };
     });
   };
@@ -61,7 +61,7 @@ const ProductModal = ({
     // [THÊM LOGIC] Kiểm tra Giá Bán phải lớn hơn Giá Vốn
     const cost = Number(formData.costPrice || 0);
     const sell = Number(formData.sellPrice || 0);
-    
+
     if (sell <= cost) {
       newErrors.sellPrice = "Giá bán phải lớn hơn giá vốn!";
     }
@@ -77,9 +77,10 @@ const ProductModal = ({
   };
 
   const inputStyle = (hasError) =>
-    `w-full rounded-lg border ${hasError
-      ? "border-red-500 text-red-900 focus:ring-red-100"
-      : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
+    `w-full rounded-lg border ${
+      hasError
+        ? "border-red-500 text-red-900 focus:ring-red-100"
+        : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
     } bg-white px-4 py-2.5 text-sm outline-none transition-all focus:ring-2 disabled:bg-gray-100 disabled:text-gray-500`;
 
   return (
@@ -209,7 +210,7 @@ const ProductModal = ({
                 </div>
               </div>
             </div>
-            
+
             {/* GIÁ BÁN - ĐÃ CẬP NHẬT GIAO DIỆN HIỂN THỊ LỖI */}
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -219,22 +220,28 @@ const ProductModal = ({
                 <input
                   type="number"
                   name="sellPrice"
-                  className={`${inputStyle(errors.sellPrice)} pl-9 font-semibold ${errors.sellPrice ? '' : 'text-blue-600'}`}
+                  className={`${inputStyle(errors.sellPrice)} pl-9 font-semibold ${errors.sellPrice ? "" : "text-blue-600"}`}
                   value={formData.sellPrice}
                   onChange={handleInputChange}
                 />
-                <div className={`pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 ${errors.sellPrice ? 'text-red-500' : 'text-blue-500'}`}>
+                <div
+                  className={`pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 ${errors.sellPrice ? "text-red-500" : "text-blue-500"}`}
+                >
                   <FaDollarSign className="h-4 w-4" />
                 </div>
               </div>
               {errors.sellPrice && (
-                <p className="mt-1 text-xs text-red-500 font-medium">{errors.sellPrice}</p>
+                <p className="mt-1 text-xs text-red-500 font-medium">
+                  {errors.sellPrice}
+                </p>
               )}
             </div>
 
             {/*Description*/}
             <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-gray-700">Mô tả sản phẩm</label>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Mô tả sản phẩm
+              </label>
               <textarea
                 value={formData.description}
                 onChange={(e) =>
@@ -251,16 +258,16 @@ const ProductModal = ({
               <label className="mb-2 block text-sm font-semibold text-gray-700">
                 Nhà cung cấp (Có thể chọn nhiều)
               </label>
-              
+
               {/* Khu vực 1: Hiển thị các Tags đã chọn */}
               <div className="flex flex-wrap gap-2 mb-3 min-h-[32px] items-center p-2 bg-white border border-gray-200 rounded-lg">
                 {formData.supplierIds?.map((id) => {
                   const supplier = suppliers?.find((s) => s.id === id);
+
                   if (!supplier) return null;
-                  
                   return (
-                    <span 
-                      key={id} 
+                    <span
+                      key={id}
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200 shadow-sm"
                     >
                       {supplier.name}
@@ -275,7 +282,8 @@ const ProductModal = ({
                     </span>
                   );
                 })}
-                {(!formData.supplierIds || formData.supplierIds.length === 0) && (
+                {(!formData.supplierIds ||
+                  formData.supplierIds.length === 0) && (
                   <span className="text-sm text-gray-400 italic px-2">
                     Chưa chọn nhà cung cấp nào...
                   </span>
@@ -285,7 +293,10 @@ const ProductModal = ({
               {/* Khu vực 2: Danh sách Checkbox */}
               <div className="grid grid-cols-2 gap-2 p-3 border border-gray-200 rounded-lg bg-gray-50 max-h-48 overflow-y-auto shadow-inner">
                 {suppliers?.map((s) => (
-                  <label key={s.id} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded-md transition-all border border-transparent hover:border-gray-200 hover:shadow-sm">
+                  <label
+                    key={s.id}
+                    className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white rounded-md transition-all border border-transparent hover:border-gray-200 hover:shadow-sm"
+                  >
                     <input
                       type="checkbox"
                       checked={formData.supplierIds?.includes(s.id) || false}
@@ -293,7 +304,9 @@ const ProductModal = ({
                       className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 transition-colors"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-700">{s.name}</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {s.name}
+                      </span>
                       <span className="text-xs text-gray-500">{s.code}</span>
                     </div>
                   </label>
