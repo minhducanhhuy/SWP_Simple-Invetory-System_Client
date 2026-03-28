@@ -19,16 +19,24 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Nếu lỗi 401 (Hết hạn cookie/Chưa đăng nhập) -> Đá văng ra trang login
-      // window.location.href = '/login';
-      console.log("Phiên đăng nhập hết hạn");
-    }
+    const status = error.response?.status;
 
-    if (error.response?.status === 403) {
-      alert(error.response.data.message || "Tài khoản đã bị khóa!");
+    // --- 1. XỬ LÝ LỖI 401 (UNAUTHORIZED) ---
+    // (Chưa đăng nhập, Hết hạn Token, hoặc Tài khoản bị khóa)
+    if (status === 401) {
+      alert(
+        error.response?.data?.message ||
+          "Phiên đăng nhập đã hết hạn hoặc tài khoản bị khóa!",
+      );
+
+      // Xóa thông tin đăng nhập và đá văng ra trang login
       logoutUser();
       window.location.href = "/login";
+    }
+
+    // --- 2. XỬ LÝ LỖI 403 (FORBIDDEN) ---
+    // (Đã đăng nhập nhưng bấm nhầm nút không có quyền)
+    if (status === 403) {
     }
 
     return Promise.reject(error);
@@ -36,3 +44,5 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+//

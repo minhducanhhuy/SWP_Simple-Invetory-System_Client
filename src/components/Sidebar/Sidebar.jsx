@@ -172,7 +172,7 @@ const Sidebar = () => {
         <div className="flex items-center gap-3">
           <FaCube className="h-5 w-5 text-blue-400" />
           <h1 className="text-lg font-bold uppercase tracking-wide">
-            IMS Enterprise
+            IMS Mini Mart
           </h1>
         </div>
       </div>
