@@ -43,8 +43,8 @@ const Header = () => {
 
   // Khối: Xử lý đổi kho
   const handleSwitchWarehouse = (warehouse) => {
-    switchLocation(warehouse); 
-    
+    switchLocation(warehouse);
+
     // Đảm bảo việc ghi vào localStorage và cập nhật Context đã hoàn tất
     setTimeout(() => {
       window.dispatchEvent(new Event("locationChanged"));
@@ -167,9 +167,12 @@ const Header = () => {
                 <FaUserCircle className="text-gray-400" />
                 Hồ sơ cá nhân
               </Link>
-              <button className="w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition-colors">
-                <FaCog className="text-gray-400" /> Cài đặt tài khoản
-              </button>
+              <Link
+                to="/profile"
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+              >
+                <FaCog className="text-gray-400" /> Cài đặt
+              </Link>
 
               <div className="border-t border-gray-100 my-1"></div>
 

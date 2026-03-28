@@ -2,6 +2,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { updateUserProfile, changePassword } from "../../services/userService";
+import { getProfile } from "../../services/authService"; // <-- [SỬA Ở ĐÂY]: Import hàm getProfile
 import {
   FaUserCircle,
   FaPhone,
@@ -12,7 +13,7 @@ import {
 } from "react-icons/fa";
 
 const ProfilePage = () => {
-  const { user, login } = useContext(AuthContext);
+  const { login, logout } = useContext(AuthContext); // Không cần lấy 'user' ra nữa vì mình sẽ tự gọi API
 
   // --- STATE CHO FORM 1: THÔNG TIN ---
   const [infoData, setInfoData] = useState({
@@ -21,6 +22,7 @@ const ProfilePage = () => {
     address: "",
   });
   const [loadingInfo, setLoadingInfo] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // Thêm state loading khi mới vào trang
 
   // --- STATE CHO FORM 2: MẬT KHẨU ---
   const [passData, setPassData] = useState({
@@ -30,24 +32,39 @@ const ProfilePage = () => {
   });
   const [loadingPass, setLoadingPass] = useState(false);
 
+  // [SỬA Ở ĐÂY]: Gọi endpoint lấy Profile ngay khi vừa mở trang
   useEffect(() => {
-    if (user) {
-      setInfoData({
-        fullName: user.fullName || "",
-        phone: user.phone || "",
-        address: user.address || "",
-      });
-    }
-  }, [user]);
+    const fetchUserData = async () => {
+      try {
+        const data = await getProfile();
 
-  // HÀM XỬ LÝ 1: LƯU THÔNG TIN
+        // Cập nhật dữ liệu vào Form
+        setInfoData({
+          fullName: data.fullName || "",
+          phone: data.phone || "",
+          address: data.address || "",
+        });
+
+        // Đồng bộ dữ liệu mới nhất này lên Context để các chỗ khác (ví dụ Header) cũng được cập nhật
+        login(data);
+      } catch (error) {
+        console.error("Lỗi lấy thông tin profile:", error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []); // Mảng rỗng [] giúp hàm này chỉ chạy đúng 1 lần khi vừa vào trang Profile
+
+  // --- HÀM 1: LƯU THÔNG TIN ---
   const handleUpdateInfo = async (e) => {
     e.preventDefault();
     setLoadingInfo(true);
     try {
-      await updateUserProfile(infoData);
+      const updatedUser = await updateUserProfile(infoData);
+      login(updatedUser); // Cập nhật lại Context
       alert("Cập nhật thông tin thành công!");
-      await login(); // Refetch lại context để cập nhật Header
     } catch (error) {
       alert("Lỗi: " + (error.response?.data?.message || "Lỗi server"));
     } finally {
@@ -55,7 +72,7 @@ const ProfilePage = () => {
     }
   };
 
-  // HÀM XỬ LÝ 2: ĐỔI MẬT KHẨU
+  // --- HÀM 2: ĐỔI MẬT KHẨU ---
   const handleChangePassword = async (e) => {
     e.preventDefault();
 
@@ -72,15 +89,24 @@ const ProfilePage = () => {
         oldPassword: passData.oldPassword,
         newPassword: passData.newPassword,
       });
-      alert("Đổi mật khẩu thành công!");
-      // Reset form mật khẩu
-      setPassData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+
+      alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+      logout();
     } catch (error) {
       alert("Lỗi: " + (error.response?.data?.message || "Lỗi server"));
     } finally {
       setLoadingPass(false);
     }
   };
+
+  // Hiển thị màn hình chờ trong lúc gọi API lấy thông tin
+  if (initialLoading) {
+    return (
+      <div className="text-center mt-20 text-gray-500">
+        Đang tải thông tin...
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto font-sans">
