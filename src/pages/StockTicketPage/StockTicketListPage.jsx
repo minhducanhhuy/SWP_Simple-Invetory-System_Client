@@ -421,8 +421,8 @@ const StockTicketListPage = () => {
                             <FaEye />
                           </button>
 
-                          {t.reason === "TRANSFER" &&
-                            t.status === "PENDING_APPROVAL" &&
+                          {/* CHỈ CẦN TRẠNG THÁI CHỜ DUYỆT LÀ SẾP ĐƯỢC QUYỀN DUYỆT (KHÔNG PHÂN BIỆT LOẠI PHIẾU) */}
+                          {t.status === "PENDING_APPROVAL" &&
                             (user?.role === "OWNER" ||
                               user?.role === "MANAGER") && (
                               <>
