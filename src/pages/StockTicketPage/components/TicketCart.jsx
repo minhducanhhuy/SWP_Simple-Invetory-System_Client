@@ -45,12 +45,12 @@ const TicketCart = ({
         {
           value: "IMPORT",
           label: "Phiếu Nhập (IMPORT)",
-          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "ADMIN_SYSTEM", "OWNER"],
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
         },
         {
           value: "EXPORT",
           label: "Phiếu Xuất (EXPORT)",
-          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "ADMIN_SYSTEM", "OWNER"],
+          allowedRoles: ["WAREHOUSE_STAFF", "MANAGER", "OWNER"],
         },
       ],
     },
@@ -202,14 +202,29 @@ const TicketCart = ({
                 }}
               >
                 <option value="">-- Chọn lý do --</option>
-                {REASON_MAPPING[ticketType]?.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
+                {REASON_MAPPING[ticketType]
+                  ?.filter((r) => {
+                    // [ĐIỀU KIỆN MỚI]: Nếu là MANAGER và đang ở tab NHẬP KHO -> Chỉ hiển thị TRANSFER
+                    if (userRole === "MANAGER" && ticketType === "IMPORT") {
+                      return r.value === "TRANSFER";
+                    }
+                    if (userRole === "MANAGER" && ticketType === "EXPORT") {
+                      return r.value === "TRANSFER";
+                    }
+                    // 2. Nếu là WAREHOUSE_STAFF (Thủ kho): Ẩn TRANSFER (Chuyển kho) và SELL (Xuất bán)
+                    if (userRole === "WAREHOUSE_STAFF") {
+                      return r.value !== "TRANSFER" && r.value !== "SELL";
+                    }
+                    // Các Role khác (OWNER, STAFF) hoặc ở tab EXPORT thì hiển thị đầy đủ
+                    return true;
+                  })
+                  .map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
               </select>
             </div>
-
             {/* Kho Đích / Kho Nguồn */}
             {reason === "TRANSFER" && (
               <div className="animate-in fade-in slide-in-from-top-1">
