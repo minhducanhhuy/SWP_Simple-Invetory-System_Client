@@ -33,8 +33,9 @@ const SupplierDetailPage = () => {
     setLoading(true);
     try {
       // Lấy ID kho
-      const currentLocationId = localStorage.getItem('currentLocationId') || '';
-      const query = currentLocationId ? `?locationId=${currentLocationId}` : '';
+      const currentLocationId =
+        localStorage.getItem("active_location_id") || "";
+      const query = currentLocationId ? `?locationId=${currentLocationId}` : "";
 
       // Gọi API có đính kèm Query lọc theo kho
       const response = await api.get(`/suppliers/${id}${query}`);
@@ -55,15 +56,17 @@ const SupplierDetailPage = () => {
   // --- 2. XỬ LÝ SỰ KIỆN THANH TOÁN ---
   const handleCreatePayment = async (paymentData) => {
     try {
-      const currentLocationId = localStorage.getItem('currentLocationId');
+      const currentLocationId = localStorage.getItem("active_location_id");
       if (!currentLocationId) {
-        return alert("Vui lòng chọn Kho làm việc trên thanh Header trước khi tạo phiếu chi!");
+        return alert(
+          "Vui lòng chọn Kho làm việc trên thanh Header trước khi tạo phiếu chi!",
+        );
       }
 
       // Gộp thêm locationId vào dữ liệu từ Modal gửi lên
       const payload = {
         ...paymentData,
-        locationId: currentLocationId 
+        locationId: currentLocationId,
       };
 
       // Gửi payload mới này cho Backend
@@ -74,7 +77,6 @@ const SupplierDetailPage = () => {
       setIsPayModalOpen(false);
       setSelectedTicketToPay(null);
       fetchDetail(); // Reload lại để cập nhật công nợ
-      
     } catch (error) {
       const errMsg = error.response?.data?.message;
       alert(Array.isArray(errMsg) ? errMsg[0] : errMsg || "Lỗi thanh toán");
