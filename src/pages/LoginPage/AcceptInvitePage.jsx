@@ -130,7 +130,7 @@ const AcceptInvitePage = () => {
             <FaCube className="text-white text-4xl" />
           </div>
           <h1 className="text-white text-2xl font-bold uppercase tracking-wide">
-            IMS Enterprise
+            IMS Mini Mart
           </h1>
           <p className="text-blue-200 text-sm mt-2">
             Hoàn tất hồ sơ để gia nhập hệ thống
