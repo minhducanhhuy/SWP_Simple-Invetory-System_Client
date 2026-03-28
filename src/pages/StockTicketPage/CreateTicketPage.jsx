@@ -168,6 +168,18 @@ const CreateTicketPage = () => {
     if (cart.length === 0) return alert("Phiếu chưa có sản phẩm nào!");
     if (!reason) return alert("Vui lòng chọn Lý do thực hiện phiếu!");
 
+    // === THÊM ĐOẠN VALIDATE HẠN SỬ DỤNG Ở ĐÂY ===
+    if (ticketType === "IMPORT" && reason === "BUY") {
+      const isMissingExpiry = cart.some(
+        (item) => !item.expiryDate || item.expiryDate.trim() === "",
+      );
+      if (isMissingExpiry) {
+        return alert(
+          "Vui lòng nhập đầy đủ Hạn sử dụng (HSD) cho tất cả sản phẩm nhập kho!",
+        );
+      }
+    }
+
     const details = cart.map((item) => ({
       productId: item.product.id,
       quantity: Number(item.quantity),

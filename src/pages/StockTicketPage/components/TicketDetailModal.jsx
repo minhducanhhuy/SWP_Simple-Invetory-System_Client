@@ -35,7 +35,6 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
       style: "currency",
       currency: "VND",
     }).format(amount);
-  
 
   const renderExpiryInfo = (expiryDate) => {
     if (!expiryDate) return <span className="text-gray-400">—</span>;
@@ -51,7 +50,9 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
     if (diffDays < 0) {
       return (
         <div className="flex flex-col items-end">
-          <span className="text-red-600 font-bold line-through">{formattedDate}</span>
+          <span className="text-red-600 font-bold line-through">
+            {formattedDate}
+          </span>
           <span className="text-red-600 text-[10px] font-bold">Đã hết HSD</span>
         </div>
       );
@@ -59,7 +60,9 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
       return (
         <div className="flex flex-col items-end">
           <span className="text-red-600 font-bold">{formattedDate}</span>
-          <span className="text-red-600 text-[10px] font-bold">Sắp hết HSD</span>
+          <span className="text-red-600 text-[10px] font-bold">
+            Sắp hết HSD
+          </span>
         </div>
       );
     }
@@ -263,7 +266,11 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                           <th className="px-4 py-3">#</th>
                           <th className="px-4 py-3">Mã SP</th>
                           <th className="px-4 py-3">Tên sản phẩm</th>
-                          {ticket.type === "IMPORT" && <th className="px-4 py-3 text-right">Hạn sử dụng</th>}
+                          {ticket.type === "IMPORT" && (
+                            <th className="px-4 py-3 text-right">
+                              Hạn sử dụng
+                            </th>
+                          )}
                           <th className="px-4 py-3 text-center">ĐVT</th>
                           <th className="px-4 py-3 text-right">Số lượng</th>
                           <th className="px-4 py-3 text-right">Đơn giá</th>
@@ -320,15 +327,18 @@ const TicketDetailModal = ({ isOpen, onClose, ticketId }) => {
                             ) : (
                               // RENDER CỘT DỮ LIỆU NHẬP XUẤT
                               <>
-                                <td className="px-4 py-3 text-center text-gray-500 text-xs bg-gray-50 rounded">
-                                  {item.product.unit?.name}
-                                </td>
-                                {/* HIỂN THỊ DỮ LIỆU HSD (KÈM BÁO ĐỎ) */}
+                                {/* 1. ĐƯA HSD LÊN TRƯỚC CHO KHỚP HEADER */}
                                 {ticket.type === "IMPORT" && (
                                   <td className="px-4 py-3 text-right">
                                     {renderExpiryInfo(item.expiryDate)}
                                   </td>
                                 )}
+
+                                {/* 2. ĐƯA ĐVT XUỐNG DƯỚI */}
+                                <td className="px-4 py-3 text-center text-gray-500 text-xs bg-gray-50 rounded">
+                                  {item.product.unit?.name}
+                                </td>
+
                                 <td className="px-4 py-3 text-right font-bold text-blue-600">
                                   {item.quantity}
                                 </td>
